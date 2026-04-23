@@ -6,7 +6,14 @@
       "mcp__chrome-devtools__evaluate_script",
       "mcp__chrome-devtools__take_screenshot",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: APFC Marketing Site\n\n- Landing page with ROI calculator\n- Print flyer \\(A4\\)\n- WhatsApp pitch template\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git config:*)",
+      "Bash(echo \"Run this after creating the GitHub repo:\n\ncd /c/Users/deepy/Downloads/apfc-marketing/apfc-marketing\ngit branch -M main\ngit remote add origin https://github.com/YOUR_USERNAME/apfc-marketing.git\ngit push -u origin main\")",
+      "Bash(gh:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "Bash(nslookup:*)"
     ]
   }
 }
