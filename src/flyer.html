@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cut Your Shop's Power Bill — APFC Flyer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter+Tight:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14100c;
+    --ink-soft:#2e2620;
+    --paper:#f5ede0;
+    --paper-warm:#ebe0cc;
+    --mustard:#e8a838;
+    --mustard-deep:#c58817;
+    --brick:#c5472d;
+    --brick-deep:#9c3621;
+    --teal:#0d5f5f;
+    --moss:#3d5a3a;
+    --sand:#f0e4ce;
+    --line:rgba(20,16,12,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#2a241e;color:var(--ink);font-family:'Inter Tight',sans-serif;-webkit-font-smoothing:antialiased}
+  body{padding:32px 16px;display:flex;justify-content:center;align-items:flex-start;min-height:100vh}
+
+  .flyer{
+    width:100%;
+    max-width:794px; /* A4 at 96dpi */
+    aspect-ratio:1/1.414;
+    background:var(--paper);
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(0,0,0,.05);
+    padding:44px 48px;
+    display:grid;
+    grid-template-rows:auto auto 1fr auto;
+    gap:22px;
+  }
+
+  /* Decorative grain + shapes */
+  .flyer::before{
+    content:"";position:absolute;inset:0;
+    background-image:
+      radial-gradient(circle at 15% 85%, rgba(232,168,56,.18), transparent 35%),
+      radial-gradient(circle at 95% 5%, rgba(197,71,45,.12), transparent 30%);
+    pointer-events:none;z-index:0;
+  }
+  .flyer::after{
+    content:"";position:absolute;inset:0;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='.9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity:.5;mix-blend-mode:multiply;pointer-events:none;z-index:1;
+  }
+  .flyer > *{position:relative;z-index:2}
+
+  /* HEADER */
+  .header{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    padding-bottom:14px;border-bottom:2px solid var(--ink);
+  }
+  .brand{font-family:'Fraunces',serif;font-weight:800;font-size:14px;letter-spacing:.15em;text-transform:uppercase}
+  .brand span{color:var(--brick)}
+  .tagline{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#666;text-align:right;line-height:1.5}
+  .bolt{display:inline-block;transform:translateY(1px)}
+
+  /* HERO */
+  .hero{text-align:left}
+  .kicker{
+    display:inline-block;background:var(--ink);color:var(--paper);
+    padding:5px 12px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;
+    margin-bottom:14px;
+  }
+  .headline{
+    font-family:'Fraunces',serif;font-weight:400;font-size:54px;line-height:.95;letter-spacing:-.02em;
+    color:var(--ink);
+  }
+  .headline em{font-style:italic;color:var(--brick);font-weight:500}
+  .headline .num{
+    font-weight:700;color:var(--mustard);
+    -webkit-text-stroke:1.5px var(--ink);
+  }
+  .sub{font-size:14px;margin-top:12px;max-width:560px;color:#3a332b;line-height:1.5}
+
+  /* MAIN GRID */
+  .main{
+    display:grid;grid-template-columns:1.15fr 1fr;gap:26px;align-items:start;
+  }
+
+  .benefits{display:flex;flex-direction:column;gap:10px}
+  .benefits h3{
+    font-family:'Fraunces',serif;font-size:18px;font-weight:600;
+    margin-bottom:4px;
+  }
+  .bitem{
+    display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:baseline;
+    padding:8px 0;border-bottom:1px dashed rgba(26,20,16,.2);
+  }
+  .bitem:last-child{border-bottom:none}
+  .bitem .icn{
+    font-family:'Fraunces',serif;font-weight:700;font-size:18px;
+    color:var(--brick);line-height:1;
+  }
+  .bitem strong{font-weight:700;font-size:13px;display:block;margin-bottom:2px}
+  .bitem span{font-size:12px;color:#3a332b;line-height:1.4}
+
+  /* SIDE PANEL */
+  .savings{
+    background:var(--ink);color:var(--paper);
+    padding:22px 22px;display:flex;flex-direction:column;gap:14px;
+    position:relative;
+  }
+  .savings::before{
+    content:"₹";position:absolute;top:-18px;right:-8px;
+    font-family:'Fraunces',serif;font-size:150px;line-height:1;
+    color:var(--mustard);opacity:.22;font-weight:900;
+  }
+  .savings h3{
+    font-family:'Fraunces',serif;font-size:18px;font-weight:500;
+    border-bottom:1px solid rgba(253,248,240,.25);padding-bottom:10px;
+  }
+  .row{display:flex;justify-content:space-between;align-items:baseline;font-size:13px}
+  .row .l{opacity:.7;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  .row .v{font-family:'Fraunces',serif;font-weight:600;font-size:16px;color:var(--mustard)}
+  .row.big .v{font-size:26px}
+  .payback{
+    background:var(--mustard);color:var(--ink);
+    margin:2px -22px -22px;padding:14px 22px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .payback .l{font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:700}
+  .payback .v{font-family:'Fraunces',serif;font-weight:800;font-size:20px;font-style:italic}
+
+  /* SEGMENTS */
+  .segments{
+    grid-column:1 / -1;
+    background:var(--sand);
+    padding:16px 20px;
+    display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;
+    border-left:4px solid var(--brick);
+  }
+  .segments .label{
+    font-family:'Fraunces',serif;font-style:italic;font-size:14px;font-weight:500;
+    color:var(--ink);margin-right:6px;
+  }
+  .chip{
+    font-size:11px;font-weight:500;padding:4px 10px;
+    background:var(--paper);border:1px solid rgba(26,20,16,.2);
+    border-radius:999px;white-space:nowrap;
+  }
+
+  /* FOOTER */
+  .footer{
+    display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;
+    padding-top:14px;border-top:2px solid var(--ink);
+  }
+  .cta{
+    font-family:'Fraunces',serif;font-size:20px;font-weight:500;line-height:1.2;
+  }
+  .cta b{color:var(--brick);font-weight:700}
+  .contact{
+    text-align:right;font-size:11px;line-height:1.6;letter-spacing:.04em;
+  }
+  .contact .big{
+    font-family:'Fraunces',serif;font-size:22px;font-weight:700;letter-spacing:-.01em;
+    display:block;color:var(--ink);
+  }
+
+  /* Corner flourish */
+  .corner{
+    position:absolute;bottom:10px;left:48px;z-index:2;
+    font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:#8a7f71;
+  }
+
+  @media print{
+    body{background:white;padding:0}
+    .flyer{box-shadow:none;max-width:none;width:100%;aspect-ratio:auto;min-height:100vh}
+  }
+  @media (max-width:700px){
+    .flyer{aspect-ratio:auto;padding:28px 24px}
+    .headline{font-size:36px}
+    .main{grid-template-columns:1fr}
+    .footer{grid-template-columns:1fr;text-align:left}
+    .contact{text-align:left}
+  }
+</style>
+</head>
+<body>
+
+<article class="flyer">
+
+  <header class="header">
+    <div class="brand">Deep &amp; Wide <span>Technologies</span></div>
+    <div class="tagline">
+      Automatic Power Factor Correction<br/>
+      <span class="bolt">⚡</span> Hyderabad · Tirupati · Goa · Muramalla
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="kicker">Free bill audit · DM us →</div>
+    <h1 class="headline">
+      Your power bill<br/>
+      is <em>overcharging</em> you<br/>
+      by <span class="num">30%.</span><br/>
+      Quietly. Every month.
+    </h1>
+    <p class="sub">
+      A hidden penalty called <b>Low Power Factor</b> inflates electricity bills for most commercial shops in India. A small panel called an <b>APFC</b> — installed next to your meter — removes it automatically. No effort. No maintenance. Just a lower bill, month after month.
+    </p>
+  </section>
+
+  <section class="main">
+
+    <div class="benefits">
+      <h3>Six reasons shop owners install one</h3>
+
+      <div class="bitem">
+        <div class="icn">01</div>
+        <div><strong>Lower bills, every month</strong><span>Typical savings of 15–30% on your commercial tariff.</span></div>
+      </div>
+      <div class="bitem">
+        <div class="icn">02</div>
+        <div><strong>Penalty charges disappear</strong><span>Power factor penalties on your bill? Gone, overnight.</span></div>
+      </div>
+      <div class="bitem">
+        <div class="icn">03</div>
+        <div><strong>Equipment lasts longer</strong><span>ACs, freezers, compressors &amp; lighting run cooler and cleaner.</span></div>
+      </div>
+      <div class="bitem">
+        <div class="icn">04</div>
+        <div><strong>No more flickering lights</strong><span>Voltage dips when the AC or fridge kicks in? Fixed.</span></div>
+      </div>
+      <div class="bitem">
+        <div class="icn">05</div>
+        <div><strong>More capacity, same connection</strong><span>Run more equipment without applying for a load upgrade.</span></div>
+      </div>
+      <div class="bitem">
+        <div class="icn">06</div>
+        <div><strong>Zero ongoing hassle</strong><span>Install once. No buttons, no switches, no maintenance drama.</span></div>
+      </div>
+    </div>
+
+    <aside class="savings">
+      <h3>What your savings look like</h3>
+      <div class="row"><span class="l">Monthly bill</span><span class="v">₹25,000</span></div>
+      <div class="row"><span class="l">Typical savings</span><span class="v">15–30%</span></div>
+      <div class="row big"><span class="l">You save</span><span class="v">₹45–90k/yr</span></div>
+      <div class="row"><span class="l">Over 10 years</span><span class="v">₹4.5–9L+</span></div>
+      <div class="payback">
+        <span class="l">Payback</span>
+        <span class="v">6–12 months</span>
+      </div>
+    </aside>
+
+  </section>
+
+  <section class="segments">
+    <span class="label">Built for →</span>
+    <span class="chip">Salons &amp; Spas</span>
+    <span class="chip">Cafés &amp; Bakeries</span>
+    <span class="chip">Ice-cream Parlours</span>
+    <span class="chip">Theatres &amp; Cinemas</span>
+    <span class="chip">Gyms &amp; Studios</span>
+    <span class="chip">Supermarkets</span>
+    <span class="chip">Restaurants</span>
+    <span class="chip">Wedding Halls</span>
+    <span class="chip">Cold Storage</span>
+  </section>
+
+  <footer class="footer">
+    <div class="cta">
+      <b>Send last month's power bill via DM.</b><br/>
+      That's it. We'll reply in 48 hours with your exact savings — free, no obligation.
+    </div>
+    <div class="contact">
+      <a href="https://wa.me/918374840074?text=Hi%2C%20I%27d%20like%20a%20free%20bill%20audit.%20I%27ll%20attach%20last%20month%27s%20power%20bill." style="color:inherit;text-decoration:none"><span class="big">wa.me/918374840074</span></a>
+      +91 83748 40074 · hello@deepandwide.in<br/>
+      Hyderabad · Tirupati · Goa · Muramalla
+    </div>
+  </footer>
+
+  <div class="corner">DW · APFC · Bill-Audit-002 · 2026</div>
+
+</article>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "apfc-marketing",
+  "version": "1.0.0",
+  "description": "Marketing kit for Deep & Wide Technologies APFC panels — static HTML, no build step",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve src",
+    "start": "npx serve src",
+    "preview": "python3 -m http.server 8000 --directory src"
+  },
+  "keywords": [
+    "apfc",
+    "power-factor-correction",
+    "marketing",
+    "landing-page",
+    "static-site"
+  ],
+  "author": "Deep & Wide Technologies Pvt. Ltd.",
+  "license": "UNLICENSED"
+}
