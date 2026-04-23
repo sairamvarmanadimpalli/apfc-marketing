@@ -78,7 +78,7 @@ Never introduce Inter, Roboto, Arial, or system fonts for headings.
 | Fact | Value | Appears in |
 |---|---|---|
 | Savings range | **15–30%** off commercial bill | all three files |
-| Payback period | **6–12 months** | index.html, whatsapp-pitch.md |
+| Payback period | **4–10 months** | index.html, whatsapp-pitch.md |
 | Primary CTA | "Send last month's power bill via DM" | all three files |
 | WhatsApp number | **+91 83748 40074** | all three files |
 | WhatsApp URL | `https://wa.me/918374840074?text=Hi%2C%20I%27d%20like%20a%20free%20bill%20audit.%20I%27ll%20attach%20last%20month%27s%20power%20bill.` | index.html, flyer.html |

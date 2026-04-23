@@ -24,8 +24,8 @@ One small box. Installed next to your meter. Works 24/7 automatically.
 
 ✓ *15–30% off* your bill — every month
 ✓ Penalty charges → *GONE*
-✓ Payback in just *6–12 months*
-✓ Panel lasts *10+ years*
+✓ Payback in just *4–10 months*
+✓ Panel lasts *5+ years*
 ✓ Equipment runs cooler, lasts longer
 ✓ No more flickering lights
 
