@@ -1,65 +1,84 @@
-⚡ *CUT YOUR SHOP'S POWER BILL BY 15–30%*
-_Without changing anything about how you run your business_
+⚡ *YOUR POWER BILL IS 30% HIGHER THAN IT SHOULD BE*
+
+_And you're paying for it every single month._
 
 ---
 
-Running a *salon, café, theatre, ice-cream shop, bakery, or retail store?*
+Running a *salon, café, bakery, theatre, gym, restaurant, or supermarket?*
 
-Your electricity bill has a hidden penalty called *"Low Power Factor"* — you pay extra every month for power you never actually use. It's like paying for a full cup but getting only 70% coffee and 30% foam. ☕
+There's a hidden charge on your bill called *"Power Factor Penalty"* — you're paying for electricity you never even use.
 
----
-
-✅ *The Fix — A Mini APFC Panel*
-
-A small box installed next to your meter that *automatically fixes the problem* 24/7. No buttons. No maintenance. No headache.
+It's like ordering a full cup of coffee ☕ but getting 30% foam.
 
 ---
 
-💰 *What You Get:*
+✅ *THE FIX: APFC Panel*
 
-🔸 *15–30% lower* electricity bill — every month, forever
-🔸 Penalty charges gone
-🔸 Incentive rebates from the electricity board
-🔸 *Payback in 6–12 months*
-🔸 Lights stop flickering when AC/compressor starts
-🔸 Fridges, freezers, ACs, music systems last longer
-🔸 Fewer power trips during peak hours
-🔸 Avoid electricity board disconnection notices
+One small box. Installed next to your meter. Works 24/7 automatically.
+
+*No buttons. No maintenance. Just lower bills.*
 
 ---
 
-🏪 *Perfect For:*
-• Beauty salons & spas
-• Cafés, bakeries, restaurants
-• Ice-cream parlours & cold storage
-• Cinema halls & theatres
-• Gyms & fitness centres
-• Supermarkets & kirana shops
-• Wedding halls
+💰 *WHAT YOU SAVE:*
+
+✓ *15–30% off* your bill — every month
+✓ Penalty charges → *GONE*
+✓ Payback in just *6–12 months*
+✓ Panel lasts *10+ years*
+✓ Equipment runs cooler, lasts longer
+✓ No more flickering lights
 
 ---
 
-📊 *Quick Math:*
-Bill ₹25,000/month → Save *₹3,750–₹7,500/month*
-That's *₹45,000–₹90,000 saved every year* 🎯
+📊 *EXAMPLE:*
+
+Monthly bill ₹35,000
+↓
+Save *₹5,250–₹10,500/month*
+↓
+That's *₹63,000–₹1.26L saved per year*
 
 ---
 
-📩 *Send last month's power bill via DM.*
+🧮 *CALCULATE YOUR SAVINGS:*
+👉 *apfc.deepandwide.in*
 
-That's it. No forms. No calls.
-
-We'll reply within 48 hours with:
-  ✓ Your exact monthly savings
-  ✓ The right panel size for your shop
-  ✓ Payback period in months
-  ✓ Written proposal
-
-*Free. No obligation. If the numbers don't work for you, we'll tell you that too.*
+Enter your bill readings — get instant ROI estimate!
 
 ---
+
+🏪 *WE SERVE:*
+• Salons & Spas
+• Cafés & Bakeries
+• Restaurants & Hotels
+• Theatres & Cinemas
+• Gyms & Fitness Studios
+• Supermarkets & Retail
+• Ice-cream & Cold Storage
+• Wedding & Function Halls
+
+---
+
+📩 *NEXT STEP — TAKES 2 MINUTES:*
+
+*Send last month's power bill* (photo) to this number.
+
+Within 48 hours, you'll get:
+✓ Your exact savings amount
+✓ Right panel size for your shop
+✓ Payback period
+✓ Written quote
+
+*100% FREE. No obligation.*
+_If the numbers don't work, we'll tell you honestly._
+
+---
+
+🌐 *Website:* apfc.deepandwide.in
+📱 *WhatsApp:* +91 83748 40074
+📧 *Email:* hello@deepandwide.in
 
 *Deep & Wide Technologies Pvt. Ltd.*
-📱 +91 83748 40074 (WhatsApp)
-wa.me/918374840074
-Hyderabad · Tirupati · Goa · Muramalla
+_Hyderabad · Tirupati · Goa · Muramalla_
+_Saving shops money since 2019_
