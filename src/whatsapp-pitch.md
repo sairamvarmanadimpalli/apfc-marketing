@@ -57,6 +57,8 @@ Enter your bill readings — get instant ROI estimate!
 • Supermarkets & Retail
 • Ice-cream & Cold Storage
 • Wedding & Function Halls
+• Aquaculture Ponds
+• Mines & Quarries
 
 ---
 
