@@ -53,7 +53,7 @@ const PANEL_CONFIGS = [
 function priceForStep(stepKvar) {
   if (stepKvar === 1) return 2400;
   if (stepKvar === 2) return 4000;
-  if (stepKvar === 3) return 6000;
+  if (stepKvar === 3) return 5400;
   if (stepKvar === 5) return 8000;
   // After 5 kVAR: minimum ₹1400 per kVAR
   if (stepKvar === 10) return 14000;
@@ -211,10 +211,11 @@ export default function App() {
     const stepResult = pickStepProgression(requiredKvar);
     const recommendedKvar = stepResult.total;
     const panelCost = calculatePanelCost(stepResult.steps);
+    const avgCostPerKvar = recommendedKvar > 0 ? Math.round(panelCost / recommendedKvar) : 0;
     const roiMonths = monthlyLossRs > 0 ? panelCost / monthlyLossRs : 0;
     return {
       reactiveDiff, monthlyLossRs, annualLossRs, requiredKvarRaw,
-      recommendedKvar, panelCost, roiMonths,
+      recommendedKvar, panelCost, avgCostPerKvar, roiMonths,
       steps: stepResult.steps,
       oversized: stepResult.oversized,
       pfActual,
@@ -696,6 +697,7 @@ export default function App() {
             </div>
             <div className="calc-row"><span className="k">Step Progression</span><span className="v" style={{ fontSize: 12 }}>{calc.steps.join(" • ")}</span></div>
             <div className="calc-row"><span className="k">Panel Cost</span><span className="v highlight">{fmtRs(calc.panelCost)}</span></div>
+            <div className="calc-row"><span className="k">Avg. Cost / kVAR</span><span className="v">₹{calc.avgCostPerKvar.toLocaleString("en-IN")}</span></div>
             <div className="calc-row"><span className="k">ROI</span><span className="v highlight">{calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + " months" : "—"}</span></div>
 
             {calc.oversized && (
