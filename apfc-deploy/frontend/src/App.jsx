@@ -55,8 +55,13 @@ function priceForKvar(kvar) {
 }
 
 function pickStepProgression(requiredKvar) {
-  // Round up required kVAR to nearest 5
-  const rounded = Math.ceil(requiredKvar / 5) * 5;
+  // Rounding rules: ≤45 → nearest 5, >45 → nearest 10
+  let rounded;
+  if (requiredKvar <= 45) {
+    rounded = Math.ceil(requiredKvar / 5) * 5;
+  } else {
+    rounded = Math.ceil(requiredKvar / 10) * 10;
+  }
 
   // Find the smallest standard panel that meets or exceeds the requirement
   const panel = PANEL_CONFIGS.find(p => p.rating >= rounded);
@@ -70,25 +75,50 @@ function pickStepProgression(requiredKvar) {
   }
 
   // For loads > 120 kVAR, build custom configuration
-  // Can use up to 16 channels, then combine capacitors (20+20=40) per channel
-  const baseSteps = [2, 3, 5]; // First 3 channels = 10 kVAR
-  let remaining = rounded - 10;
-  const steps = [...baseSteps];
+  // Rule: Each step must be ≤ sum of all previous steps (prevents oscillation)
+  const steps = [2, 3, 5]; // Fixed base steps
+  let sumSoFar = 10; // 2+3+5
+  let remaining = rounded - sumSoFar;
 
-  // Fill channels 4-16 with 10s and 20s
-  const availableSteps = [20, 10]; // Prefer 20 over 10 for efficiency
+  // Available capacitor sizes
+  const availableSteps = [40, 20, 10, 5]; // Largest to smallest
 
   while (remaining > 0 && steps.length < 16) {
-    // Pick largest step that doesn't overshoot by more than 10 kVAR
-    const step = availableSteps.find(s => s <= remaining + 10) || availableSteps[availableSteps.length - 1];
-    steps.push(step);
-    remaining -= step;
+    // Find largest step that:
+    // 1. Doesn't exceed sum of all previous steps
+    // 2. Helps us reach the target
+    let chosenStep = null;
+
+    for (const step of availableSteps) {
+      if (step <= sumSoFar && step <= remaining + 10) {
+        chosenStep = step;
+        break;
+      }
+    }
+
+    // If no step fits the sum rule, use the sum itself
+    if (!chosenStep) {
+      chosenStep = Math.min(sumSoFar, remaining);
+      // Round to nearest available step
+      if (chosenStep >= 35) chosenStep = 40;
+      else if (chosenStep >= 15) chosenStep = 20;
+      else if (chosenStep >= 7) chosenStep = 10;
+      else chosenStep = 5;
+    }
+
+    steps.push(chosenStep);
+    sumSoFar += chosenStep;
+    remaining -= chosenStep;
   }
 
-  // If still need more capacity, combine 20+20 in additional channels
+  // If still need more capacity after 16 channels, use combined capacitors
   while (remaining > 0) {
-    steps.push(40); // Combined 20+20 per channel
-    remaining -= 40;
+    // Use 40 kVAR (20+20 combined), respecting sum rule
+    const maxAllowed = sumSoFar; // Can't exceed sum of previous
+    const step = Math.min(40, maxAllowed, remaining + 10);
+    steps.push(step);
+    sumSoFar += step;
+    remaining -= step;
   }
 
   const total = steps.reduce((sum, s) => sum + s, 0);
