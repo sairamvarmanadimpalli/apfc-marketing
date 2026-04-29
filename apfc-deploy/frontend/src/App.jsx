@@ -189,6 +189,12 @@ export default function App() {
   const [customAddon, setCustomAddon] = useState(0); // 0, 1, or 2 kVAR
   const [withoutInstallation, setWithoutInstallation] = useState(false);
 
+  // Customer information
+  const [custName, setCustName] = useState("");
+  const [custPhone, setCustPhone] = useState("");
+  const [custEmail, setCustEmail] = useState("");
+  const [custBusiness, setCustBusiness] = useState("");
+
   // Re-detect type when SC number changes (if user hasn't manually picked)
   useEffect(() => {
     if (serviceType === "AUTO") {
@@ -824,6 +830,77 @@ export default function App() {
             )}
 
             <div className="actions"><button className="btn-primary" onClick={handlePrint}><Download size={16} /> Print / Save as PDF</button></div>
+          </div>
+
+          <div className="panel">
+            <h2><span className="num">4</span>Customer Information</h2>
+            <div className="field">
+              <label>Name *</label>
+              <input
+                value={custName}
+                onChange={(e) => setCustName(e.target.value)}
+                placeholder="Enter your name"
+              />
+            </div>
+            <div className="field">
+              <label>Phone Number *</label>
+              <input
+                value={custPhone}
+                onChange={(e) => setCustPhone(e.target.value)}
+                placeholder="e.g. 9876543210"
+                type="tel"
+              />
+            </div>
+            <div className="field">
+              <label>Email</label>
+              <input
+                value={custEmail}
+                onChange={(e) => setCustEmail(e.target.value)}
+                placeholder="your.email@example.com"
+                type="email"
+              />
+            </div>
+            <div className="field">
+              <label>Business/Location Name</label>
+              <input
+                value={custBusiness}
+                onChange={(e) => setCustBusiness(e.target.value)}
+                placeholder="e.g. ABC Salon, Hyderabad"
+              />
+            </div>
+            <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(0,0,0,0.02)', borderRadius: '8px', fontSize: '12px', color: 'var(--ink-soft)' }}>
+              <strong>Summary:</strong> {calc.recommendedKvar} kVAR APFC Panel • {fmtRs(calc.panelCost)} • ROI: {calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + " months" : "—"}
+            </div>
+            <div className="actions">
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  const message = `Hi, I'm interested in an APFC panel.
+
+Name: ${custName || "—"}
+Phone: ${custPhone || "—"}
+Email: ${custEmail || "—"}
+Business: ${custBusiness || "—"}
+
+SC Number: ${scno || "—"}
+Service Type: ${resolvedType || "—"}
+Panel: ${calc.recommendedKvar} kVAR (${calc.steps.join(" • ")}${customAddon > 0 ? ` + ${customAddon}` : ""})
+Cost: ${fmtRs(calc.panelCost)}
+${withoutInstallation ? "Without Installation (5% discount applied)" : "With Installation"}
+ROI: ${calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + " months" : "—"}
+
+Monthly Loss: ${fmtRs(calc.monthlyLossRs)}
+Annual Loss: ${fmtRs(calc.annualLossRs)}`;
+
+                  const encoded = encodeURIComponent(message);
+                  window.open(`https://wa.me/918374840074?text=${encoded}`, '_blank');
+                }}
+                disabled={!custName || !custPhone}
+                style={{ opacity: (!custName || !custPhone) ? 0.5 : 1 }}
+              >
+                Send Quote via WhatsApp
+              </button>
+            </div>
           </div>
         </div>
 
