@@ -99,25 +99,52 @@ function parseLtBill(html) {
   const units = grab(text, /UNITS\s*:?\s*(\d+)/i);
   if (units) out.kvah = parseInt(units, 10);
 
-  // Calculate kWh from meter readings
-  const presentReading = grab(text, /Present\s*Reading\s*:?\s*(\d+)/i)
-                      || grab(text, /P\.?R\.?\s*:?\s*(\d+)/i);
-  const previousReading = grab(text, /Previous\s*Reading\s*:?\s*(\d+)/i)
-                       || grab(text, /Prev\.?\s*Reading\s*:?\s*(\d+)/i);
-  const mf = grab(text, /MF\s*:?\s*([\d.]+)/i);
+  // Extract MF first
+  const mf = grab(text, /MF\s*:?\s*([\d.]+)/i)
+          || grab(text, /Multiplying\s*Factor\s*:?\s*([\d.]+)/i);
+  if (mf) out.mf = parseFloat(mf);
 
+  // Extract meter readings from table format:
+  // DATE    STATUS    READING(KWH)
+  // Present    02/04/26    01    229332
+  // Previous   03/03/26    01    221174
+
+  // Match "Present" row - last number is the reading
+  const presentMatch = text.match(/Present\s+\d{2}\/\d{2}\/\d{2}\s+\d+\s+(\d+)/i);
+  const presentReading = presentMatch ? parseInt(presentMatch[1], 10) : null;
+
+  // Match "Previous" row - last number is the reading
+  const previousMatch = text.match(/Previous\s+\d{2}\/\d{2}\/\d{2}\s+\d+\s+(\d+)/i);
+  const previousReading = previousMatch ? parseInt(previousMatch[1], 10) : null;
+
+  // Calculate kWh from readings
   if (presentReading && previousReading && mf) {
-    const diff = parseInt(presentReading, 10) - parseInt(previousReading, 10);
+    const diff = presentReading - previousReading;
     out.kwh = Math.round(diff * parseFloat(mf));
-    out.mf = parseFloat(mf);
-    out.presentReading = parseInt(presentReading, 10);
-    out.previousReading = parseInt(previousReading, 10);
+    out.presentReading = presentReading;
+    out.previousReading = previousReading;
+  }
+
+  // Fallback: try simple patterns if table format failed
+  if (!out.kwh) {
+    const kwhDirect = grab(text, /kWh\s*:?\s*(\d+)/i)
+                   || grab(text, /KWH\s*:?\s*(\d+)/i)
+                   || grab(text, /Consumption\s*\(?\s*kWh\s*\)?\s*:?\s*(\d+)/i);
+    if (kwhDirect) {
+      out.kwh = parseInt(kwhDirect, 10);
+    }
   }
 
   const billAmt = grab(text, /BILL\s*AMOUNT\s*\*?\*?\s*([\d.]+)/i);
   if (billAmt) out.billAmount = parseFloat(billAmt);
   const phase = grab(text, /PH\s*:?\s*(\d)/i);
   if (phase) out.phase = parseInt(phase, 10);
+
+  // Debug: Add warning if kWh extraction failed
+  if (!out.kwh && out.kvah) {
+    out._kwhWarning = "kWh not found on bill - check meter readings or provide manually";
+  }
+
   return out;
 }
 
