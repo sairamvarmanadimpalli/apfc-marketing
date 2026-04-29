@@ -81,6 +81,6 @@ _If the numbers don't work, we'll tell you honestly._
 📱 *WhatsApp:* +91 83748 40074
 📧 *Email:* hello@deepandwide.in
 
-*Deep & Wide Technologies Pvt. Ltd.*
+*DeepAndWide Technologies Pvt. Ltd.*
 _Hyderabad · Tirupati · Goa · Muramalla_
 _Saving shops money since 2019_
