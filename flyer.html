@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cut Your Shop's Power Bill — APFC Flyer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1f1f1f;
+    --ink-soft:#6b7280;
+    --paper:#fffbfa;
+    --paper-warm:#fff5f3;
+    --accent:#f87171;
+    --accent-dark:#dc2626;
+    --accent-light:#fef2f2;
+    --coral:#fb7185;
+    --sand:#fef7f6;
+    --line:rgba(31,31,31,.08);
+    --radius:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#fce7e4;color:var(--ink);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased}
+  body{padding:32px 16px;display:flex;justify-content:center;align-items:flex-start;min-height:100vh}
+
+  .flyer{
+    width:100%;
+    max-width:794px; /* A4 at 96dpi */
+    aspect-ratio:1/1.414;
+    background:var(--paper);
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 25px 50px -12px rgba(31,31,31,.15);
+    padding:48px 52px;
+    display:grid;
+    grid-template-rows:auto auto 1fr auto;
+    gap:24px;
+    border-radius:6px;
+  }
+  .flyer > *{position:relative;z-index:2}
+
+  /* HEADER */
+  .header{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    padding-bottom:14px;border-bottom:1px solid var(--line);
+  }
+  .brand{font-family:'Outfit',sans-serif;font-weight:700;font-size:14px}
+  .brand span{color:var(--accent)}
+  .tagline{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);text-align:right;line-height:1.6}
+  .bolt{display:inline-block;color:var(--accent)}
+
+  /* HERO */
+  .hero{text-align:left}
+  .kicker{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--accent-light);color:var(--accent-dark);
+    padding:6px 14px;border-radius:999px;
+    font-size:10px;font-weight:700;
+    margin-bottom:14px;
+  }
+  .kicker::before{content:"⚡";font-size:11px}
+  .headline{
+    font-family:'Outfit',sans-serif;font-weight:800;font-size:42px;line-height:1.1;letter-spacing:-.02em;
+    color:var(--ink);
+  }
+  .headline em{font-style:normal;color:var(--accent);font-weight:800}
+  .headline .num{
+    font-weight:800;color:var(--accent);
+  }
+  .sub{font-size:13px;margin-top:12px;max-width:500px;color:var(--ink-soft);line-height:1.6}
+
+  /* MAIN GRID */
+  .main{
+    display:grid;grid-template-columns:1.15fr 1fr;gap:28px;align-items:start;
+  }
+
+  .benefits{display:flex;flex-direction:column;gap:8px}
+  .benefits h3{
+    font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;
+    margin-bottom:8px;
+  }
+  .bitem{
+    display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;
+    padding:10px 14px;background:var(--sand);border-radius:6px;
+  }
+  .bitem .icn{
+    width:28px;height:28px;background:var(--accent);color:white;
+    border-radius:6px;display:flex;align-items:center;justify-content:center;
+    font-family:'Outfit',sans-serif;font-weight:700;font-size:11px;
+  }
+  .bitem strong{font-weight:700;font-size:12px;display:block;margin-bottom:2px}
+  .bitem span{font-size:10px;color:var(--ink-soft);line-height:1.5}
+
+  /* SIDE PANEL */
+  .savings{
+    background:linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%);color:white;
+    padding:24px 22px;display:flex;flex-direction:column;gap:14px;
+    position:relative;border-radius:var(--radius);
+  }
+  .savings h3{
+    font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;
+    border-bottom:1px solid rgba(255,255,255,.15);padding-bottom:12px;
+  }
+  .row{display:flex;justify-content:space-between;align-items:baseline;font-size:12px}
+  .row .l{color:rgba(255,255,255,.6);font-size:10px;letter-spacing:.05em;text-transform:uppercase}
+  .row .v{font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;color:var(--accent)}
+  .row.big .v{font-size:22px;color:white}
+  .payback{
+    background:var(--accent);color:white;
+    margin:4px -22px -24px;padding:14px 22px;border-radius:0 0 var(--radius) var(--radius);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .payback .l{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:rgba(255,255,255,.85)}
+  .payback .v{font-family:'Outfit',sans-serif;font-weight:800;font-size:18px}
+
+  /* SEGMENTS */
+  .segments{
+    grid-column:1 / -1;
+    background:var(--accent-light);
+    padding:16px 20px;
+    display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;
+    border-radius:var(--radius);
+  }
+  .segments .label{
+    font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;
+    color:var(--accent-dark);margin-right:6px;
+  }
+  .chip{
+    font-size:10px;font-weight:600;padding:5px 12px;
+    background:white;border:none;
+    border-radius:999px;white-space:nowrap;color:var(--ink);
+  }
+
+  /* FOOTER */
+  .footer{
+    display:grid;grid-template-columns:1fr auto auto;gap:20px;align-items:center;
+    padding-top:14px;border-top:1px solid var(--line);
+  }
+  .qr-code{
+    display:flex;align-items:center;justify-content:center;
+  }
+  .qr-code svg{color:var(--ink)}
+  .cta{
+    font-family:'Outfit',sans-serif;font-size:15px;font-weight:500;line-height:1.4;
+  }
+  .cta b{color:var(--accent);font-weight:700}
+  .contact{
+    text-align:right;font-size:11px;line-height:1.6;color:var(--ink-soft);
+  }
+  .contact .big{
+    font-family:'Outfit',sans-serif;font-size:17px;font-weight:700;
+    display:block;color:var(--accent);margin-bottom:4px;
+  }
+
+  /* Corner flourish */
+  .corner{
+    position:absolute;bottom:12px;left:52px;z-index:2;
+    font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);
+  }
+
+  @media print{
+    body{background:white;padding:0}
+    .flyer{box-shadow:none;max-width:none;width:100%;aspect-ratio:auto;min-height:100vh;border-radius:0}
+  }
+  @media (max-width:700px){
+    body{padding:16px 12px}
+    .flyer{aspect-ratio:auto;padding:24px 20px;gap:20px}
+
+    /* Header */
+    .header{flex-direction:column;gap:8px;padding-bottom:12px}
+    .tagline{text-align:left;font-size:9px}
+    .brand{font-size:13px}
+
+    /* Hero */
+    .headline{font-size:26px}
+    .kicker{font-size:9px;padding:5px 10px;margin-bottom:10px}
+    .sub{font-size:12px;margin-top:10px}
+
+    /* Main grid */
+    .main{grid-template-columns:1fr;gap:20px}
+
+    /* Benefits */
+    .benefits h3{font-size:12px;margin-bottom:6px}
+    .bitem{padding:8px 10px;gap:10px;grid-template-columns:24px 1fr}
+    .bitem .icn{width:24px;height:24px;font-size:9px}
+    .bitem strong{font-size:11px}
+    .bitem span{font-size:9px}
+
+    /* Savings panel */
+    .savings{padding:18px 16px;gap:10px}
+    .savings h3{font-size:12px;padding-bottom:10px}
+    .row{font-size:11px}
+    .row .l{font-size:9px}
+    .row .v{font-size:13px}
+    .row.big .v{font-size:18px}
+    .payback{margin:4px -16px -18px;padding:10px 16px}
+    .payback .l{font-size:9px}
+    .payback .v{font-size:15px}
+
+    /* Segments */
+    .segments{padding:12px 14px;gap:6px 8px}
+    .segments .label{font-size:10px}
+    .chip{font-size:9px;padding:4px 10px}
+
+    /* Footer */
+    .footer{grid-template-columns:1fr;gap:14px;padding-top:12px}
+    .cta{font-size:13px}
+    .contact{text-align:left;font-size:10px}
+    .contact .big{font-size:14px}
+    .qr-code{justify-content:flex-start}
+    .qr-code svg{width:52px;height:52px}
+
+    /* Corner */
+    .corner{left:20px;bottom:8px;font-size:8px}
+  }
+
+  /* Very small screens */
+  @media (max-width:400px){
+    .flyer{padding:20px 16px}
+    .headline{font-size:22px}
+    .sub{font-size:11px}
+    .bitem{padding:6px 8px}
+    .bitem strong{font-size:10px}
+    .bitem span{font-size:8px}
+    .chip{font-size:8px;padding:3px 8px}
+    .cta{font-size:12px}
+  }
+</style>
+</head>
+<body>
+
+<article class="flyer">
+
+  <header class="header">
+    <div class="brand">DeepAndWide <span>Technologies</span></div>
+    <div class="tagline">
+      Automatic Power Factor Correction<br/>
+      <span class="bolt">⚡</span> Hyderabad · Tirupati · Goa · Muramalla
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="kicker">Free bill audit · DM us →</div>
+    <h1 class="headline">
+      Your power bill<br/>
+      is <em>overcharging</em> you<br/>
+      by <span class="num">30%.</span><br/>
+      Quietly. Every month.
+    </h1>
+    <p class="sub">
+      A hidden penalty called <b>Low Power Factor</b> inflates electricity bills for most commercial shops in India. A small panel called an <b>APFC</b> — installed next to your meter — removes it automatically. No effort. No maintenance. Just a lower bill, month after month.
+    </p>
+  </section>
+
+  <section class="main">
+
+    <div class="benefits">
+      <h3>Six reasons shop owners install one</h3>
+
+      <div class="bitem">
+        <div class="icn">01</div>
+        <div><strong>Lower bills, every month</strong><span>Typical savings of 15–30% on your commercial tariff.</span></div>
+      </div>
+      <div class="bitem">
+        <div class="icn">02</div>
+        <div><strong>Penalty charges disappear</strong><span>Power factor penalties on your bill? Gone, overnight.</span></div>
+      </div>
+      <div class="bitem">
+        <div class="icn">03</div>
+        <div><strong>Equipment lasts longer</strong><span>ACs, freezers, compressors &amp; lighting run cooler and cleaner.</span></div>
+      </div>
+      <div class="bitem">
+        <div class="icn">04</div>
+        <div><strong>No more flickering lights</strong><span>Voltage dips when the AC or fridge kicks in? Fixed.</span></div>
+      </div>
+      <div class="bitem">
+        <div class="icn">05</div>
+        <div><strong>More capacity, same connection</strong><span>Run more equipment without applying for a load upgrade.</span></div>
+      </div>
+      <div class="bitem">
+        <div class="icn">06</div>
+        <div><strong>Zero ongoing hassle</strong><span>Install once. No buttons, no switches, no maintenance drama.</span></div>
+      </div>
+    </div>
+
+    <aside class="savings">
+      <h3>What your savings look like</h3>
+      <div class="row"><span class="l">Monthly bill</span><span class="v">₹25,000</span></div>
+      <div class="row"><span class="l">Typical savings</span><span class="v">15–30%</span></div>
+      <div class="row big"><span class="l">You save</span><span class="v">₹45–90k/yr</span></div>
+      <div class="row"><span class="l">Over 10 years</span><span class="v">₹4.5–9L+</span></div>
+      <div class="payback">
+        <span class="l">Payback</span>
+        <span class="v">4–10 months</span>
+      </div>
+    </aside>
+
+  </section>
+
+  <section class="segments">
+    <span class="label">Built for →</span>
+    <span class="chip">Salons &amp; Spas</span>
+    <span class="chip">Cafés &amp; Bakeries</span>
+    <span class="chip">Ice-cream Parlours</span>
+    <span class="chip">Theatres &amp; Cinemas</span>
+    <span class="chip">Gyms &amp; Studios</span>
+    <span class="chip">Supermarkets</span>
+    <span class="chip">Restaurants</span>
+    <span class="chip">Wedding Halls</span>
+    <span class="chip">Cold Storage</span>
+    <span class="chip">Aquaculture Ponds</span>
+    <span class="chip">Mines &amp; Quarries</span>
+  </section>
+
+  <footer class="footer">
+    <div class="cta">
+      <b>Send last month's power bill via DM.</b><br/>
+      That's it. We'll reply in 48 hours with your exact savings — free, no obligation.
+    </div>
+    <div class="contact">
+      <a href="https://wa.me/918374840074?text=Hi%2C%20I%27d%20like%20a%20free%20bill%20audit.%20I%27ll%20attach%20last%20month%27s%20power%20bill." style="color:inherit;text-decoration:none"><span class="big">wa.me/918374840074</span></a>
+      +91 83748 40074 · hello@deepandwide.in<br/>
+      Hyderabad · Tirupati · Goa · Muramalla
+    </div>
+    <div class="qr-code" title="Scan to WhatsApp">
+      <!-- QR Code for WhatsApp link -->
+      <svg viewBox="0 0 29 29" width="64" height="64" style="background:white;padding:4px;border-radius:4px">
+        <path d="M0 0h7v1h-7zM8 0h1v1h-1zM10 0h3v1h-3zM14 0h1v1h-1zM17 0h2v1h-2zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM12 1h1v1h-1zM14 1h2v1h-2zM17 1h1v1h-1zM20 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h1v1h-1zM13 2h1v1h-1zM15 2h1v1h-1zM18 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h1v1h-1zM11 3h2v1h-2zM14 3h3v1h-3zM18 3h2v1h-2zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h2v1h-2zM11 4h1v1h-1zM13 4h2v1h-2zM16 4h2v1h-2zM19 4h2v1h-2zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h1v1h-1zM11 5h1v1h-1zM14 5h1v1h-1zM16 5h1v1h-1zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM9 7h2v1h-2zM12 7h1v1h-1zM15 7h3v1h-3zM19 7h2v1h-2zM0 8h1v1h-1zM2 8h2v1h-2zM5 8h1v1h-1zM7 8h3v1h-3zM12 8h2v1h-2zM16 8h1v1h-1zM19 8h1v1h-1zM21 8h3v1h-3zM25 8h1v1h-1zM27 8h2v1h-2zM1 9h1v1h-1zM5 9h2v1h-2zM8 9h1v1h-1zM10 9h1v1h-1zM13 9h1v1h-1zM17 9h1v1h-1zM19 9h2v1h-2zM23 9h1v1h-1zM26 9h1v1h-1zM0 10h2v1h-2zM3 10h2v1h-2zM6 10h2v1h-2zM10 10h1v1h-1zM14 10h1v1h-1zM16 10h4v1h-4zM22 10h1v1h-1zM24 10h3v1h-3zM28 10h1v1h-1zM2 11h1v1h-1zM4 11h1v1h-1zM7 11h1v1h-1zM10 11h3v1h-3zM14 11h2v1h-2zM18 11h2v1h-2zM23 11h2v1h-2zM27 11h1v1h-1zM0 12h3v1h-3zM4 12h1v1h-1zM6 12h5v1h-5zM12 12h2v1h-2zM15 12h1v1h-1zM17 12h1v1h-1zM19 12h1v1h-1zM22 12h1v1h-1zM25 12h3v1h-3zM0 13h1v1h-1zM2 13h1v1h-1zM4 13h3v1h-3zM9 13h2v1h-2zM13 13h2v1h-2zM17 13h2v1h-2zM20 13h2v1h-2zM24 13h3v1h-3zM28 13h1v1h-1zM0 14h1v1h-1zM3 14h3v1h-3zM7 14h2v1h-2zM10 14h2v1h-2zM14 14h1v1h-1zM17 14h2v1h-2zM20 14h1v1h-1zM24 14h1v1h-1zM26 14h2v1h-2zM0 15h2v1h-2zM4 15h2v1h-2zM8 15h2v1h-2zM11 15h2v1h-2zM14 15h3v1h-3zM19 15h1v1h-1zM21 15h3v1h-3zM25 15h2v1h-2zM1 16h3v1h-3zM5 16h2v1h-2zM8 16h1v1h-1zM10 16h2v1h-2zM14 16h1v1h-1zM16 16h1v1h-1zM19 16h1v1h-1zM23 16h2v1h-2zM27 16h1v1h-1zM0 17h1v1h-1zM3 17h1v1h-1zM5 17h1v1h-1zM7 17h2v1h-2zM10 17h1v1h-1zM13 17h1v1h-1zM15 17h1v1h-1zM17 17h3v1h-3zM21 17h3v1h-3zM25 17h3v1h-3zM0 18h2v1h-2zM3 18h3v1h-3zM7 18h3v1h-3zM11 18h3v1h-3zM17 18h1v1h-1zM19 18h1v1h-1zM21 18h2v1h-2zM25 18h2v1h-2zM28 18h1v1h-1zM0 19h1v1h-1zM2 19h3v1h-3zM6 19h3v1h-3zM11 19h2v1h-2zM15 19h1v1h-1zM17 19h1v1h-1zM19 19h2v1h-2zM22 19h1v1h-1zM25 19h1v1h-1zM27 19h2v1h-2zM3 20h1v1h-1zM6 20h1v1h-1zM8 20h3v1h-3zM13 20h2v1h-2zM18 20h2v1h-2zM21 20h1v1h-1zM24 20h2v1h-2zM27 20h2v1h-2zM8 21h2v1h-2zM12 21h2v1h-2zM16 21h2v1h-2zM19 21h3v1h-3zM23 21h3v1h-3zM27 21h1v1h-1zM0 22h7v1h-7zM9 22h2v1h-2zM14 22h2v1h-2zM18 22h2v1h-2zM22 22h1v1h-1zM24 22h1v1h-1zM26 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM10 23h4v1h-4zM15 23h1v1h-1zM19 23h2v1h-2zM22 23h1v1h-1zM24 23h1v1h-1zM28 23h1v1h-1zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM8 24h1v1h-1zM12 24h1v1h-1zM14 24h3v1h-3zM18 24h2v1h-2zM21 24h1v1h-1zM25 24h1v1h-1zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM10 25h2v1h-2zM13 25h2v1h-2zM17 25h2v1h-2zM20 25h3v1h-3zM24 25h2v1h-2zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM8 26h2v1h-2zM11 26h1v1h-1zM13 26h2v1h-2zM17 26h1v1h-1zM20 26h2v1h-2zM23 26h1v1h-1zM25 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM12 27h1v1h-1zM14 27h1v1h-1zM16 27h1v1h-1zM18 27h2v1h-2zM22 27h2v1h-2zM25 27h1v1h-1zM27 27h2v1h-2zM0 28h7v1h-7zM8 28h1v1h-1zM10 28h3v1h-3zM14 28h2v1h-2zM17 28h2v1h-2zM22 28h2v1h-2zM25 28h1v1h-1zM28 28h1v1h-1z" fill="currentColor"/>
+      </svg>
+    </div>
+  </footer>
+
+  <div class="corner">DW · APFC · Bill-Audit-002 · 2026</div>
+
+</article>
+
+</body>
+</html>

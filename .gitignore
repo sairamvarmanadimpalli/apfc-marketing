@@ -1,0 +1,38 @@
+# Dependencies (should not exist, but just in case)
+node_modules/
+.pnp/
+.pnp.js
+
+# Build outputs (should not exist)
+dist/
+build/
+.next/
+.output/
+
+# Local env
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.sublime-project
+.sublime-workspace
+
+# Misc
+*.zip
+*.tar.gz
