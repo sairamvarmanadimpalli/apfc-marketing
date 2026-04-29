@@ -194,6 +194,8 @@ export default function App() {
   const [custPhone, setCustPhone] = useState("");
   const [custEmail, setCustEmail] = useState("");
   const [custBusiness, setCustBusiness] = useState("");
+  const [submitState, setSubmitState] = useState("idle"); // idle | submitting | success | error
+  const [submitMsg, setSubmitMsg] = useState("");
 
   // Re-detect type when SC number changes (if user hasn't manually picked)
   useEffect(() => {
@@ -326,6 +328,69 @@ export default function App() {
     } catch (e) {
       setFetchState("error");
       setFetchMsg(`Network error: ${e.message}. Check backend URL or try manual entry.`);
+    }
+  };
+
+  const handleSubmitLead = async () => {
+    if (!custName.trim() || !custPhone.trim()) {
+      setSubmitState("error");
+      setSubmitMsg("Please fill in Name and Phone Number.");
+      return;
+    }
+
+    setSubmitState("submitting");
+    setSubmitMsg("Submitting your information...");
+
+    try {
+      // Google Apps Script Web App URL (needs to be deployed by user)
+      const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+
+      const leadData = {
+        timestamp: new Date().toISOString(),
+        name: custName,
+        phone: custPhone,
+        email: custEmail || "—",
+        business: custBusiness || "—",
+        scNumber: scno || "—",
+        serviceType: resolvedType || "—",
+        panelRating: calc.recommendedKvar,
+        stepProgression: calc.steps.join(" • ") + (customAddon > 0 ? ` + ${customAddon}` : ""),
+        panelCost: calc.panelCost,
+        avgCostPerKvar: calc.avgCostPerKvar,
+        withoutInstallation: withoutInstallation ? "Yes" : "No",
+        roiMonths: calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) : "—",
+        monthlyLoss: calc.monthlyLossRs,
+        annualLoss: calc.annualLossRs,
+        connectedLoad: connectedLoad || "—",
+        recordedMd: recordedMd || "—",
+        kwh: kwh || "—",
+        kvah: kvah || "—",
+      };
+
+      const resp = await fetch(GOOGLE_SHEET_URL, {
+        method: "POST",
+        mode: "no-cors", // Google Apps Script requires this
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(leadData),
+      });
+
+      // With no-cors mode, we can't read response, so assume success
+      setSubmitState("success");
+      setSubmitMsg("Thank you! We'll contact you soon.");
+
+      // Clear form after 3 seconds
+      setTimeout(() => {
+        setCustName("");
+        setCustPhone("");
+        setCustEmail("");
+        setCustBusiness("");
+        setSubmitState("idle");
+        setSubmitMsg("");
+      }, 3000);
+
+    } catch (e) {
+      setSubmitState("error");
+      setSubmitMsg(`Error: ${e.message}. Please try again or call us.`);
     }
   };
 
@@ -871,34 +936,29 @@ export default function App() {
             <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(0,0,0,0.02)', borderRadius: '8px', fontSize: '12px', color: 'var(--ink-soft)' }}>
               <strong>Summary:</strong> {calc.recommendedKvar} kVAR APFC Panel • {fmtRs(calc.panelCost)} • ROI: {calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + " months" : "—"}
             </div>
+
+            {submitMsg && (
+              <div style={{
+                marginTop: '12px',
+                padding: '12px',
+                borderRadius: '8px',
+                fontSize: '13px',
+                background: submitState === 'success' ? '#e8f5e9' : submitState === 'error' ? '#ffebee' : '#fff3e0',
+                color: submitState === 'success' ? '#2e7d32' : submitState === 'error' ? '#c62828' : '#e65100',
+                border: `1px solid ${submitState === 'success' ? '#2e7d32' : submitState === 'error' ? '#c62828' : '#e65100'}`,
+              }}>
+                {submitMsg}
+              </div>
+            )}
+
             <div className="actions">
               <button
                 className="btn-primary"
-                onClick={() => {
-                  const message = `Hi, I'm interested in an APFC panel.
-
-Name: ${custName || "—"}
-Phone: ${custPhone || "—"}
-Email: ${custEmail || "—"}
-Business: ${custBusiness || "—"}
-
-SC Number: ${scno || "—"}
-Service Type: ${resolvedType || "—"}
-Panel: ${calc.recommendedKvar} kVAR (${calc.steps.join(" • ")}${customAddon > 0 ? ` + ${customAddon}` : ""})
-Cost: ${fmtRs(calc.panelCost)}
-${withoutInstallation ? "Without Installation (5% discount applied)" : "With Installation"}
-ROI: ${calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + " months" : "—"}
-
-Monthly Loss: ${fmtRs(calc.monthlyLossRs)}
-Annual Loss: ${fmtRs(calc.annualLossRs)}`;
-
-                  const encoded = encodeURIComponent(message);
-                  window.open(`https://wa.me/918374840074?text=${encoded}`, '_blank');
-                }}
-                disabled={!custName || !custPhone}
-                style={{ opacity: (!custName || !custPhone) ? 0.5 : 1 }}
+                onClick={handleSubmitLead}
+                disabled={!custName || !custPhone || submitState === 'submitting'}
+                style={{ opacity: (!custName || !custPhone || submitState === 'submitting') ? 0.5 : 1 }}
               >
-                Send Quote via WhatsApp
+                {submitState === 'submitting' ? 'Submitting...' : 'Submit Quote Request'}
               </button>
             </div>
           </div>
