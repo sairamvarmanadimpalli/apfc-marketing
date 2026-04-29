@@ -217,59 +217,272 @@ export default function App() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#f5ede0",
-      fontFamily: "'Fraunces', serif",
-      color: "#14100c",
-      padding: "24px 16px",
+      background: "var(--paper)",
+      fontFamily: "'Outfit', sans-serif",
+      color: "var(--ink)",
+      padding: "0",
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
-        * { box-sizing: border-box; }
-        body { margin: 0; background: #f5ede0; }
-        .container { max-width: 1100px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 2px solid #14100c; }
-        .header h1 { font-size: clamp(28px, 5vw, 44px); margin: 0; letter-spacing: 0.02em; font-weight: 600; display: inline-flex; align-items: center; gap: 12px; color: #14100c; font-family: 'Fraunces', serif; }
-        .header .sub { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: #c5472d; margin-top: 8px; }
-        .grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
-        @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
-        .panel { background: #f0e4ce; border: 2px solid #14100c; padding: 24px; box-shadow: 12px 12px 0 #e8a838; }
-        .panel h2 { font-size: 11px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.3em; text-transform: uppercase; color: #c5472d; margin: 0 0 20px 0; font-weight: 500; }
-        .field { margin-bottom: 14px; }
-        .field label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: #2e2620; margin-bottom: 6px; }
-        .field input, .field select { width: 100%; background: #fff; border: 2px solid #14100c; color: #14100c; padding: 10px 12px; font-family: 'Inter Tight', sans-serif; font-size: 14px; }
-        .field input:focus, .field select:focus { outline: none; border-color: #e8a838; }
-        .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .btn { background: #c5472d; color: #f5ede0; border: 2px solid #14100c; padding: 12px 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; box-shadow: 4px 4px 0 #14100c; transition: all 0.15s; }
-        .btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #14100c; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn.outline { background: transparent; color: #14100c; border: 2px solid #14100c; }
-        .btn.outline:hover { background: #ebe0cc; }
-        .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
-        .status { margin-top: 12px; padding: 10px 12px; font-size: 12px; font-family: 'JetBrains Mono', monospace; border: 2px solid; display: flex; gap: 8px; align-items: flex-start; }
-        .status.success { background: #e8f5e9; color: #2e7d32; border-color: #2e7d32; }
-        .status.error { background: #ffebee; color: #c62828; border-color: #c62828; }
-        .status.loading { background: #fff8e1; color: #f57c00; border-color: #f57c00; }
-        .preview { margin-top: 14px; padding: 12px; background: #ebe0cc; border-left: 4px solid #e8a838; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.7; }
-        .preview .pk { color: #2e2620; display: inline-block; min-width: 60px; font-weight: 700; }
-        .preview .pv { color: #14100c; }
-        .type-badge { display: inline-block; padding: 2px 8px; border: 2px solid #14100c; background: #e8a838; color: #14100c; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; margin-left: 8px; font-weight: 700; }
-        .card-wrap { display: flex; justify-content: center; padding: 20px 0; }
-        .pitch-card { width: 380px; aspect-ratio: 1.75 / 1; background: #c5472d; color: #f5ede0; padding: 20px 22px; border: 2px solid #14100c; box-shadow: 12px 12px 0 #14100c; font-family: 'Fraunces', serif; position: relative; overflow: hidden; }
-        .pitch-card::before { content: ''; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"); pointer-events: none; mix-blend-mode: multiply; }
-        .brand { font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #f5ede0; text-align: center; padding-bottom: 8px; border-bottom: 2px solid #14100c; }
-        .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; margin-top: 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-        .field-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-        .field-row .lbl { letter-spacing: 0.15em; text-transform: uppercase; font-size: 9px; color: #f5ede0; opacity: 0.9; font-weight: 700; }
-        .field-row .val { background: #f5ede0; color: #14100c; padding: 3px 8px; font-weight: 700; font-size: 11px; min-width: 60px; text-align: center; letter-spacing: 0.05em; border: 1px solid #14100c; }
-        .card-footer { position: absolute; bottom: 8px; left: 22px; right: 22px; font-size: 8px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.2em; color: rgba(245, 237, 224, 0.8); display: flex; justify-content: space-between; }
-        .calc-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(20, 16, 12, 0.2); font-family: 'JetBrains Mono', monospace; font-size: 13px; }
-        .calc-row .k { color: #2e2620; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
-        .calc-row .v { color: #14100c; font-weight: 500; }
-        .calc-row .v.gold { color: #c5472d; font-weight: 700; }
-        .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+        :root {
+          --ink: #1f1f1f;
+          --ink-soft: #6b7280;
+          --paper: #fffbfa;
+          --paper-warm: #fff5f3;
+          --accent: #f87171;
+          --accent-dark: #dc2626;
+          --accent-light: #fef2f2;
+          --sand: #fef7f6;
+          --line: rgba(31,31,31,.08);
+          --shadow-sm: 0 1px 2px rgba(31,31,31,.04);
+          --shadow: 0 4px 6px -1px rgba(31,31,31,.06), 0 2px 4px -2px rgba(31,31,31,.06);
+          --shadow-lg: 0 10px 15px -3px rgba(31,31,31,.07), 0 4px 6px -4px rgba(31,31,31,.07);
+          --radius: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; background: var(--paper); }
+
+        /* Nav */
+        .app-nav {
+          position: sticky; top: 0; z-index: 50;
+          backdrop-filter: blur(12px); background: rgba(255,255,255,.85);
+          border-bottom: 1px solid var(--line);
+        }
+        .nav-inner {
+          max-width: 1280px; margin: 0 auto; padding: 16px 32px;
+          display: flex; justify-content: space-between; align-items: center; gap: 24px;
+        }
+        .logo {
+          font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 15px;
+          letter-spacing: -.01em; color: var(--ink);
+        }
+        .logo span { color: var(--accent); }
+        .nav-kicker {
+          font-family: 'JetBrains Mono', monospace; font-size: 11px;
+          letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft);
+          font-weight: 400;
+        }
+
+        /* Container */
+        .container { max-width: 1280px; margin: 0 auto; padding: 48px 32px; }
+
+        /* Header */
+        .header {
+          text-align: center; margin-bottom: 48px;
+        }
+        .header h1 {
+          font-family: 'Outfit', sans-serif; font-weight: 800;
+          font-size: clamp(32px, 5vw, 48px); line-height: 1.2;
+          letter-spacing: -.03em; color: var(--ink); margin-bottom: 12px;
+        }
+        .header h1 em {
+          font-style: normal; color: var(--accent); font-weight: 800;
+        }
+        .header .sub {
+          font-size: 16px; color: var(--ink-soft); max-width: 580px;
+          margin: 0 auto; line-height: 1.6;
+        }
+
+        /* Grid */
+        .grid {
+          display: grid; grid-template-columns: 1fr; gap: 24px;
+        }
+        @media (min-width: 900px) {
+          .grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* Panel */
+        .panel {
+          background: white; border: 1px solid var(--line);
+          padding: 32px; border-radius: calc(var(--radius) * 1.5);
+          box-shadow: var(--shadow);
+        }
+        .panel h2 {
+          font-family: 'Outfit', sans-serif; font-weight: 700;
+          font-size: 18px; color: var(--ink); margin: 0 0 24px 0;
+          letter-spacing: -.01em; display: flex; align-items: center; gap: 8px;
+        }
+        .panel h2 .num {
+          display: inline-flex; align-items: center; justify-content: center;
+          width: 28px; height: 28px; border-radius: 50%;
+          background: var(--accent-light); color: var(--accent-dark);
+          font-size: 13px; font-weight: 700;
+        }
+
+        /* Field */
+        .field { margin-bottom: 20px; }
+        .field label {
+          display: block; font-family: 'Outfit', sans-serif;
+          font-size: 13px; font-weight: 600; color: var(--ink);
+          margin-bottom: 8px; letter-spacing: -.01em;
+        }
+        .field input, .field select {
+          width: 100%; background: var(--paper); border: 1px solid var(--line);
+          color: var(--ink); padding: 12px 14px;
+          font-family: 'Outfit', sans-serif; font-size: 14px;
+          border-radius: var(--radius); transition: all .2s;
+          min-height: 44px;
+        }
+        .field input:focus, .field select:focus {
+          outline: none; border-color: var(--accent);
+          box-shadow: 0 0 0 3px var(--accent-light);
+        }
+        .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 720px) {
+          .row2 { grid-template-columns: 1fr; }
+        }
+
+        /* Buttons */
+        .btn-primary {
+          background: var(--accent); color: white;
+          padding: 14px 24px; font-size: 14px; font-weight: 600;
+          font-family: 'Outfit', sans-serif;
+          border: none; border-radius: var(--radius);
+          cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
+          text-decoration: none; box-shadow: var(--shadow);
+          transition: all .25s; min-height: 44px;
+        }
+        .btn-primary:hover {
+          background: var(--accent-dark); transform: translateY(-2px);
+          box-shadow: var(--shadow-lg);
+        }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-ghost {
+          background: white; color: var(--ink);
+          padding: 14px 20px; font-size: 14px; font-weight: 600;
+          font-family: 'Outfit', sans-serif;
+          border: 1px solid var(--line); border-radius: var(--radius);
+          cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+          text-decoration: none; box-shadow: var(--shadow-sm);
+          transition: all .25s; min-height: 44px;
+        }
+        .btn-ghost:hover {
+          border-color: var(--accent); color: var(--accent);
+          transform: translateY(-2px); box-shadow: var(--shadow);
+        }
+
+        .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        /* Status */
+        .status {
+          margin-top: 16px; padding: 14px 16px; font-size: 13px;
+          font-family: 'Outfit', sans-serif;
+          border-radius: var(--radius); display: flex; gap: 10px;
+          align-items: flex-start; line-height: 1.5;
+        }
+        .status.success {
+          background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;
+        }
+        .status.error {
+          background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;
+        }
+        .status.loading {
+          background: #fffbeb; color: #92400e; border: 1px solid #fde68a;
+        }
+
+        /* Preview */
+        .preview {
+          margin-top: 20px; padding: 20px; background: var(--sand);
+          border-radius: var(--radius); border: 1px solid var(--line);
+          font-family: 'JetBrains Mono', monospace; font-size: 12px;
+          line-height: 1.8;
+        }
+        .preview .pk {
+          color: var(--ink-soft); display: inline-block; min-width: 70px;
+          font-weight: 600;
+        }
+        .preview .pv { color: var(--ink); }
+
+        /* Type badge */
+        .type-badge {
+          display: inline-flex; align-items: center; justify-content: center;
+          padding: 4px 10px; background: var(--accent-light);
+          color: var(--accent-dark); font-family: 'JetBrains Mono', monospace;
+          font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+          margin-left: 8px; border-radius: 6px;
+        }
+
+        /* Calc rows */
+        .calc-row {
+          display: flex; justify-content: space-between; padding: 12px 0;
+          border-bottom: 1px solid var(--line);
+          font-family: 'Outfit', sans-serif; font-size: 14px;
+        }
+        .calc-row .k {
+          color: var(--ink-soft); font-size: 13px; font-weight: 500;
+        }
+        .calc-row .v {
+          color: var(--ink); font-weight: 600;
+        }
+        .calc-row .v.highlight {
+          color: var(--accent-dark); font-weight: 700;
+        }
+
+        /* Print card */
+        .card-wrap { display: flex; justify-content: center; padding: 32px 0; }
+        .pitch-card {
+          width: 380px; aspect-ratio: 1.75 / 1;
+          background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+          color: white; padding: 24px 26px;
+          border-radius: calc(var(--radius) * 1.5);
+          box-shadow: var(--shadow-lg); position: relative; overflow: hidden;
+        }
+        .pitch-card::before {
+          content: ''; position: absolute; inset: 0;
+          background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+          pointer-events: none;
+        }
+        .brand {
+          font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+          font-family: 'JetBrains Mono', monospace; font-weight: 700;
+          color: white; text-align: center; padding-bottom: 12px;
+          border-bottom: 1px solid rgba(255,255,255,0.3); position: relative;
+        }
+        .card-grid {
+          display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px;
+          margin-top: 16px; font-family: 'JetBrains Mono', monospace;
+          font-size: 11px; position: relative;
+        }
+        .field-row {
+          display: flex; justify-content: space-between; align-items: center; gap: 8px;
+        }
+        .field-row .lbl {
+          letter-spacing: 0.15em; text-transform: uppercase; font-size: 9px;
+          color: rgba(255,255,255,0.9); font-weight: 700;
+        }
+        .field-row .val {
+          background: white; color: var(--accent-dark);
+          padding: 4px 10px; font-weight: 700; font-size: 11px;
+          min-width: 60px; text-align: center; letter-spacing: 0.05em;
+          border-radius: 4px;
+        }
+        .card-footer {
+          position: absolute; bottom: 10px; left: 26px; right: 26px;
+          font-size: 8px; font-family: 'JetBrains Mono', monospace;
+          letter-spacing: 0.2em; color: rgba(255,255,255,0.8);
+          display: flex; justify-content: space-between;
+        }
+
+        .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
         .spin { animation: spin 0.8s linear infinite; }
         @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
-        .footer-note { margin-top: 32px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #2e2620; letter-spacing: 0.1em; border-top: 2px solid rgba(20, 16, 12, 0.18); padding-top: 16px; }
+
+        .footer-note {
+          margin-top: 48px; text-align: center;
+          font-family: 'JetBrains Mono', monospace; font-size: 11px;
+          color: var(--ink-soft); letter-spacing: 0.05em;
+          border-top: 1px solid var(--line); padding-top: 24px;
+        }
+
+        @media (max-width: 720px) {
+          .container { padding: 32px 20px; }
+          .panel { padding: 24px 20px; }
+          .header { margin-bottom: 32px; }
+        }
+
         @media print {
           body { background: white !important; }
           .container > *:not(.print-area) { display: none !important; }
@@ -277,15 +490,23 @@ export default function App() {
         }
       `}</style>
 
+      <nav className="app-nav">
+        <div className="nav-inner">
+          <div className="logo">Deep<span>&</span>Wide</div>
+          <div className="nav-kicker">APFC Calculator · TSSPDCL</div>
+        </div>
+      </nav>
+
       <div className="container">
         <div className="header">
-          <h1><Zap size={32} color="#e8a838" />DeepAndWide Technologies</h1>
-          <div className="sub">APFC Calculator · TSSPDCL · LT + HT</div>
+          <h1><em>APFC</em> Calculator</h1>
+          <div className="sub">Auto-size panels and calculate ROI from TSSPDCL bills — LT and HT supported</div>
         </div>
 
         <div className="grid">
           <div className="panel">
-            <h2>1 · Service Lookup
+            <h2>
+              <span className="num">1</span>Service Lookup
               {resolvedType && <span className="type-badge">{resolvedType}</span>}
             </h2>
             <div className="field">
@@ -306,14 +527,14 @@ export default function App() {
               </select>
             </div>
             <div className="btn-row">
-              <button className="btn" onClick={handleFetch} disabled={fetchState === "loading"}>
+              <button className="btn-primary" onClick={handleFetch} disabled={fetchState === "loading"}>
                 {fetchState === "loading"
-                  ? <><Loader2 size={14} className="spin" /> Fetching…</>
-                  : <><RefreshCw size={14} /> Fetch from TGSPDCL</>}
+                  ? <><Loader2 size={16} className="spin" /> Fetching…</>
+                  : <><RefreshCw size={16} /> Fetch from TGSPDCL</>}
               </button>
               {billPreview?.sourceUrl && (
-                <a href={billPreview.sourceUrl} target="_blank" rel="noopener noreferrer" className="btn outline">
-                  <ExternalLink size={14} /> Open Source Bill
+                <a href={billPreview.sourceUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+                  <ExternalLink size={16} /> Open Source Bill
                 </a>
               )}
             </div>
@@ -350,8 +571,8 @@ export default function App() {
               </div>
             )}
 
-            <div style={{ height: 24 }} />
-            <h2>2 · Bill Parameters</h2>
+            <div style={{ height: 32 }} />
+            <h2><span className="num">2</span>Bill Parameters</h2>
             <div className="field"><label>Customer Name</label><input value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="e.g. B SRINIVAS" /></div>
             <div className="row2">
               <div className="field"><label>Connected Load (kW)</label><input value={connectedLoad} onChange={(e) => setConnectedLoad(e.target.value)} placeholder="39" /></div>
@@ -365,7 +586,7 @@ export default function App() {
           </div>
 
           <div className="panel">
-            <h2>3 · Computed Values</h2>
+            <h2><span className="num">3</span>Computed Values</h2>
             {calc.pfActual && (
               <div className="calc-row">
                 <span className="k">Power Factor (kWh / kVAh)</span>
@@ -373,7 +594,7 @@ export default function App() {
               </div>
             )}
             <div className="calc-row"><span className="k">Reactive Diff (kVAh − kWh)</span><span className="v">{calc.reactiveDiff.toLocaleString("en-IN")}</span></div>
-            <div className="calc-row"><span className="k">Monthly Loss</span><span className="v gold">{fmtRs(calc.monthlyLossRs)}</span></div>
+            <div className="calc-row"><span className="k">Monthly Loss</span><span className="v highlight">{fmtRs(calc.monthlyLossRs)}</span></div>
             <div className="calc-row"><span className="k">Annual Loss</span><span className="v">{fmtRs(calc.annualLossRs)}</span></div>
             <div className="calc-row">
               <span className="k">
@@ -381,11 +602,11 @@ export default function App() {
               </span>
               <span className="v">{calc.requiredKvarRaw.toFixed(1)} → {calc.recommendedKvar} kVAR</span>
             </div>
-            <div className="calc-row"><span className="k">Step Progression</span><span className="v" style={{ fontSize: 11 }}>{calc.steps.join(" • ")}</span></div>
+            <div className="calc-row"><span className="k">Step Progression</span><span className="v" style={{ fontSize: 12 }}>{calc.steps.join(" • ")}</span></div>
             <div className="calc-row"><span className="k">Price / kVAR</span><span className="v">₹{calc.pricePerKvar.toLocaleString("en-IN")}</span></div>
-            <div className="calc-row"><span className="k">Panel Cost</span><span className="v gold">{fmtRs(calc.panelCost)}</span></div>
-            <div className="calc-row"><span className="k">ROI</span><span className="v gold">{calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + " months" : "—"}</span></div>
-            <div className="actions"><button className="btn" onClick={handlePrint}><Download size={14} /> Print / Save as PDF</button></div>
+            <div className="calc-row"><span className="k">Panel Cost</span><span className="v highlight">{fmtRs(calc.panelCost)}</span></div>
+            <div className="calc-row"><span className="k">ROI</span><span className="v highlight">{calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + " months" : "—"}</span></div>
+            <div className="actions"><button className="btn-primary" onClick={handlePrint}><Download size={16} /> Print / Save as PDF</button></div>
           </div>
         </div>
 
