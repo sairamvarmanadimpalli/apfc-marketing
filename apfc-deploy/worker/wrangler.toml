@@ -1,0 +1,8 @@
+name = "apfc-bill-fetcher"
+main = "index.js"
+compatibility_date = "2024-12-01"
+
+# Optional: bind a custom domain after first deploy
+# routes = [
+#   { pattern = "apfc-api.deepandwide.in/*", custom_domain = true }
+# ]

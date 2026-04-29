@@ -217,59 +217,59 @@ export default function App() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "linear-gradient(135deg, #1a1a1a 0%, #2d1e1e 100%)",
-      fontFamily: "'Cormorant Garamond', Georgia, serif",
-      color: "#f5f0e8",
+      background: "#f5ede0",
+      fontFamily: "'Fraunces', serif",
+      color: "#14100c",
       padding: "24px 16px",
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
         * { box-sizing: border-box; }
-        body { margin: 0; }
+        body { margin: 0; background: #f5ede0; }
         .container { max-width: 1100px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid rgba(245, 240, 232, 0.15); }
-        .header h1 { font-size: clamp(28px, 5vw, 44px); margin: 0; letter-spacing: 0.02em; font-weight: 600; display: inline-flex; align-items: center; gap: 12px; }
-        .header .sub { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: #c4a86b; margin-top: 8px; }
+        .header { text-align: center; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 2px solid #14100c; }
+        .header h1 { font-size: clamp(28px, 5vw, 44px); margin: 0; letter-spacing: 0.02em; font-weight: 600; display: inline-flex; align-items: center; gap: 12px; color: #14100c; font-family: 'Fraunces', serif; }
+        .header .sub { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: #c5472d; margin-top: 8px; }
         .grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
         @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
-        .panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(245, 240, 232, 0.12); border-radius: 4px; padding: 24px; }
-        .panel h2 { font-size: 11px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.3em; text-transform: uppercase; color: #c4a86b; margin: 0 0 20px 0; font-weight: 500; }
+        .panel { background: #f0e4ce; border: 2px solid #14100c; padding: 24px; box-shadow: 12px 12px 0 #e8a838; }
+        .panel h2 { font-size: 11px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.3em; text-transform: uppercase; color: #c5472d; margin: 0 0 20px 0; font-weight: 500; }
         .field { margin-bottom: 14px; }
-        .field label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: #a09588; margin-bottom: 6px; }
-        .field input, .field select { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(245, 240, 232, 0.2); color: #f5f0e8; padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 14px; border-radius: 2px; }
-        .field input:focus, .field select:focus { outline: none; border-color: #c4a86b; }
+        .field label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: #2e2620; margin-bottom: 6px; }
+        .field input, .field select { width: 100%; background: #fff; border: 2px solid #14100c; color: #14100c; padding: 10px 12px; font-family: 'Inter Tight', sans-serif; font-size: 14px; }
+        .field input:focus, .field select:focus { outline: none; border-color: #e8a838; }
         .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .btn { background: #c4a86b; color: #1a1a1a; border: none; padding: 12px 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
-        .btn:hover { background: #d4b878; }
+        .btn { background: #c5472d; color: #f5ede0; border: 2px solid #14100c; padding: 12px 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; box-shadow: 4px 4px 0 #14100c; transition: all 0.15s; }
+        .btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #14100c; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn.outline { background: transparent; color: #c4a86b; border: 1px solid #c4a86b; }
-        .btn.outline:hover { background: rgba(196, 168, 107, 0.1); }
+        .btn.outline { background: transparent; color: #14100c; border: 2px solid #14100c; }
+        .btn.outline:hover { background: #ebe0cc; }
         .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
-        .status { margin-top: 12px; padding: 10px 12px; font-size: 12px; font-family: 'JetBrains Mono', monospace; border-radius: 2px; display: flex; gap: 8px; align-items: flex-start; }
-        .status.success { background: rgba(80, 160, 80, 0.15); color: #a8e6a8; }
-        .status.error { background: rgba(200, 80, 80, 0.15); color: #f0a8a8; }
-        .status.loading { background: rgba(196, 168, 107, 0.15); color: #f0d68b; }
-        .preview { margin-top: 14px; padding: 12px; background: rgba(0,0,0,0.25); border-left: 2px solid #c4a86b; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.7; }
-        .preview .pk { color: #a09588; display: inline-block; min-width: 60px; }
-        .preview .pv { color: #f5f0e8; }
-        .type-badge { display: inline-block; padding: 2px 8px; border: 1px solid #c4a86b; color: #c4a86b; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; margin-left: 8px; }
+        .status { margin-top: 12px; padding: 10px 12px; font-size: 12px; font-family: 'JetBrains Mono', monospace; border: 2px solid; display: flex; gap: 8px; align-items: flex-start; }
+        .status.success { background: #e8f5e9; color: #2e7d32; border-color: #2e7d32; }
+        .status.error { background: #ffebee; color: #c62828; border-color: #c62828; }
+        .status.loading { background: #fff8e1; color: #f57c00; border-color: #f57c00; }
+        .preview { margin-top: 14px; padding: 12px; background: #ebe0cc; border-left: 4px solid #e8a838; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.7; }
+        .preview .pk { color: #2e2620; display: inline-block; min-width: 60px; font-weight: 700; }
+        .preview .pv { color: #14100c; }
+        .type-badge { display: inline-block; padding: 2px 8px; border: 2px solid #14100c; background: #e8a838; color: #14100c; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; margin-left: 8px; font-weight: 700; }
         .card-wrap { display: flex; justify-content: center; padding: 20px 0; }
-        .pitch-card { width: 380px; aspect-ratio: 1.75 / 1; background: linear-gradient(135deg, #8b1a1a 0%, #6b1414 100%); color: #fff8e7; padding: 20px 22px; border-radius: 6px; box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 60px rgba(0,0,0,0.2); font-family: 'Cormorant Garamond', Georgia, serif; position: relative; overflow: hidden; }
-        .pitch-card::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.04) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(0,0,0,0.15) 0%, transparent 50%); pointer-events: none; }
-        .brand { font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #fff8e7; text-align: center; padding-bottom: 8px; border-bottom: 0.5px solid rgba(255,248,231,0.3); }
+        .pitch-card { width: 380px; aspect-ratio: 1.75 / 1; background: #c5472d; color: #f5ede0; padding: 20px 22px; border: 2px solid #14100c; box-shadow: 12px 12px 0 #14100c; font-family: 'Fraunces', serif; position: relative; overflow: hidden; }
+        .pitch-card::before { content: ''; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"); pointer-events: none; mix-blend-mode: multiply; }
+        .brand { font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #f5ede0; text-align: center; padding-bottom: 8px; border-bottom: 2px solid #14100c; }
         .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; margin-top: 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
         .field-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-        .field-row .lbl { letter-spacing: 0.15em; text-transform: uppercase; font-size: 9px; color: #fff8e7; opacity: 0.85; }
-        .field-row .val { background: #fff8e7; color: #1a1a1a; padding: 3px 8px; font-weight: 700; font-size: 11px; min-width: 60px; text-align: center; letter-spacing: 0.05em; }
-        .card-footer { position: absolute; bottom: 8px; left: 22px; right: 22px; font-size: 8px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.2em; color: rgba(255,248,231,0.6); display: flex; justify-content: space-between; }
-        .calc-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(245, 240, 232, 0.1); font-family: 'JetBrains Mono', monospace; font-size: 13px; }
-        .calc-row .k { color: #a09588; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
-        .calc-row .v { color: #f5f0e8; font-weight: 500; }
-        .calc-row .v.gold { color: #c4a86b; font-weight: 700; }
+        .field-row .lbl { letter-spacing: 0.15em; text-transform: uppercase; font-size: 9px; color: #f5ede0; opacity: 0.9; font-weight: 700; }
+        .field-row .val { background: #f5ede0; color: #14100c; padding: 3px 8px; font-weight: 700; font-size: 11px; min-width: 60px; text-align: center; letter-spacing: 0.05em; border: 1px solid #14100c; }
+        .card-footer { position: absolute; bottom: 8px; left: 22px; right: 22px; font-size: 8px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.2em; color: rgba(245, 237, 224, 0.8); display: flex; justify-content: space-between; }
+        .calc-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(20, 16, 12, 0.2); font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+        .calc-row .k { color: #2e2620; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+        .calc-row .v { color: #14100c; font-weight: 500; }
+        .calc-row .v.gold { color: #c5472d; font-weight: 700; }
         .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
         .spin { animation: spin 0.8s linear infinite; }
         @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
-        .footer-note { margin-top: 32px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6a6055; letter-spacing: 0.1em; }
+        .footer-note { margin-top: 32px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #2e2620; letter-spacing: 0.1em; border-top: 2px solid rgba(20, 16, 12, 0.18); padding-top: 16px; }
         @media print {
           body { background: white !important; }
           .container > *:not(.print-area) { display: none !important; }
@@ -279,8 +279,8 @@ export default function App() {
 
       <div className="container">
         <div className="header">
-          <h1><Zap size={32} color="#c4a86b" />DeepAndWide Technologies</h1>
-          <div className="sub">APFC Sales Pitch Generator · TGSPDCL · LT + HT</div>
+          <h1><Zap size={32} color="#e8a838" />DeepAndWide Technologies</h1>
+          <div className="sub">APFC Calculator · TSSPDCL · LT + HT</div>
         </div>
 
         <div className="grid">

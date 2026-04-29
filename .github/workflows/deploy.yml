@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  build-and-deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -24,13 +24,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build Calculator
+        run: |
+          cd apfc-deploy/frontend
+          npm ci
+          npm run build
+
+      - name: Prepare deployment
+        run: |
+          mkdir -p _site
+          cp -r src/* _site/
+          mkdir -p _site/calculator
+          cp -r apfc-deploy/frontend/dist/* _site/calculator/
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'src'
+          path: '_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
