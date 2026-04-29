@@ -729,6 +729,18 @@ export default function App() {
                   />
                   <span>Without Installation (5% discount)</span>
                 </label>
+                {withoutInstallation && (
+                  <div style={{
+                    marginTop: '6px',
+                    marginLeft: '24px',
+                    fontSize: '11px',
+                    color: 'var(--accent-dark)',
+                    lineHeight: '1.4',
+                    fontStyle: 'italic'
+                  }}>
+                    Installation guide will be provided for your in-house electrician
+                  </div>
+                )}
               </div>
 
               <div>
