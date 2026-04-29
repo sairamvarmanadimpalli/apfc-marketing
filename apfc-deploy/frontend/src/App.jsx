@@ -26,8 +26,27 @@ function getApiBase() {
 }
 
 // ---------------------------------------------------------------------------
-// PRICING & SIZING (Sairam's rules)
+// PRICING & SIZING (Actual DeepAndWide panel configurations)
 // ---------------------------------------------------------------------------
+
+// Actual panel SKUs manufactured by DeepAndWide
+const PANEL_CONFIGS = [
+  { rating: 20, steps: [2, 3, 5, 10] },
+  { rating: 25, steps: [2, 3, 5, 5, 10] },
+  { rating: 30, steps: [2, 3, 5, 10, 10] },
+  { rating: 35, steps: [2, 3, 5, 5, 10, 10] },
+  { rating: 40, steps: [2, 3, 5, 10, 20] },
+  { rating: 45, steps: [2, 3, 5, 5, 10, 20] },
+  { rating: 50, steps: [2, 3, 5, 10, 10, 20] },
+  { rating: 60, steps: [2, 3, 5, 10, 20, 20] },
+  { rating: 70, steps: [2, 3, 5, 10, 10, 20, 20] },
+  { rating: 80, steps: [2, 3, 5, 10, 20, 20, 20] },
+  { rating: 90, steps: [2, 3, 5, 10, 10, 20, 20, 20] },
+  { rating: 100, steps: [2, 3, 5, 10, 20, 20, 20, 20] },
+  { rating: 110, steps: [2, 3, 5, 10, 10, 20, 20, 20, 20] },
+  { rating: 120, steps: [2, 3, 5, 10, 20, 20, 20, 20, 20] },
+];
+
 function priceForKvar(kvar) {
   if (kvar <= 0) return 0;
   if (kvar < 25) return 2000;
@@ -36,20 +55,27 @@ function priceForKvar(kvar) {
 }
 
 function pickStepProgression(requiredKvar) {
-  const fixed = [1, 2, 3, 5];
-  const fixedTotal = 11;
-  if (requiredKvar <= fixedTotal) return { steps: fixed, total: fixedTotal };
-  const bigSteps = [10, 20, 25];
-  let remaining = requiredKvar - fixedTotal;
-  const chosen = [];
-  for (let i = 0; i < 4 && remaining > 0; i++) {
-    let best = bigSteps[0];
-    for (const s of bigSteps) if (s <= remaining + 5) best = s;
-    chosen.push(best);
-    remaining -= best;
+  // Round up required kVAR to nearest 5
+  const rounded = Math.ceil(requiredKvar / 5) * 5;
+
+  // Find the smallest panel that meets or exceeds the requirement
+  const panel = PANEL_CONFIGS.find(p => p.rating >= rounded);
+
+  // If no standard panel fits, use the largest available (120 kVAR)
+  if (!panel) {
+    const largest = PANEL_CONFIGS[PANEL_CONFIGS.length - 1];
+    return {
+      steps: largest.steps,
+      total: largest.rating,
+      oversized: true // Flag to indicate customer needs custom panel
+    };
   }
-  const steps = [...fixed, ...chosen];
-  return { steps, total: steps.reduce((a, b) => a + b, 0) };
+
+  return {
+    steps: panel.steps,
+    total: panel.rating,
+    oversized: false
+  };
 }
 
 // HT vs LT auto-detect — letters prefix = HT (e.g. MCL3800), pure digits = LT
@@ -125,6 +151,7 @@ export default function App() {
       reactiveDiff, monthlyLossRs, annualLossRs, requiredKvarRaw,
       recommendedKvar, pricePerKvar, panelCost, roiMonths,
       steps: stepResult.steps,
+      oversized: stepResult.oversized,
       pfActual,
     };
   }, [connectedLoad, recordedMd, kwh, kvah, tariff, resolvedType]);
@@ -606,6 +633,22 @@ export default function App() {
             <div className="calc-row"><span className="k">Price / kVAR</span><span className="v">₹{calc.pricePerKvar.toLocaleString("en-IN")}</span></div>
             <div className="calc-row"><span className="k">Panel Cost</span><span className="v highlight">{fmtRs(calc.panelCost)}</span></div>
             <div className="calc-row"><span className="k">ROI</span><span className="v highlight">{calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + " months" : "—"}</span></div>
+
+            {calc.oversized && (
+              <div style={{
+                marginTop: '16px',
+                padding: '12px 16px',
+                background: '#fff8e1',
+                border: '2px solid #f57c00',
+                borderRadius: '8px',
+                fontSize: '13px',
+                lineHeight: '1.6'
+              }}>
+                <strong style={{ color: '#f57c00', display: 'block', marginBottom: '4px' }}>⚠️ Custom Panel Required</strong>
+                This load requires more than 120 kVAR. We'll design a custom panel configuration for you. Please contact us at <a href="tel:+918374840074" style={{ color: '#f57c00', fontWeight: 600 }}>+91 83748 40074</a> for a detailed quote.
+              </div>
+            )}
+
             <div className="actions"><button className="btn-primary" onClick={handlePrint}><Download size={16} /> Print / Save as PDF</button></div>
           </div>
         </div>
