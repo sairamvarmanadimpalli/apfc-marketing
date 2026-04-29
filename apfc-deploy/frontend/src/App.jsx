@@ -49,12 +49,22 @@ const PANEL_CONFIGS = [
   { rating: 120, steps: [2, 3, 5, 10, 20, 20, 20, 20, 20] },
 ];
 
-function priceForKvar(kvar) {
-  if (kvar <= 0) return 0;
-  if (kvar < 21) return 2100;
-  if (kvar < 25) return 2000;
-  if (kvar <= 35) return 1800;
-  return 1500;
+// Calculate cost for a single capacitor step
+function priceForStep(stepKvar) {
+  if (stepKvar === 1) return 3000;
+  if (stepKvar === 2) return 5000;
+  if (stepKvar === 3) return 3 * 2500;
+  if (stepKvar === 5) return 5 * 2000;
+  if (stepKvar === 10) return 10 * 1800;
+  if (stepKvar === 20) return 20 * 1500;
+  if (stepKvar === 40) return 40 * 1500;
+  // Fallback for any other size
+  return stepKvar * 1500;
+}
+
+// Calculate total panel cost from step configuration
+function calculatePanelCost(steps) {
+  return steps.reduce((total, step) => total + priceForStep(step), 0);
 }
 
 function pickStepProgression(requiredKvar) {
@@ -199,12 +209,11 @@ export default function App() {
     const requiredKvar = Math.ceil(requiredKvarRaw / 5) * 5 || 0;
     const stepResult = pickStepProgression(requiredKvar);
     const recommendedKvar = stepResult.total;
-    const pricePerKvar = priceForKvar(recommendedKvar);
-    const panelCost = recommendedKvar * pricePerKvar;
+    const panelCost = calculatePanelCost(stepResult.steps);
     const roiMonths = monthlyLossRs > 0 ? panelCost / monthlyLossRs : 0;
     return {
       reactiveDiff, monthlyLossRs, annualLossRs, requiredKvarRaw,
-      recommendedKvar, pricePerKvar, panelCost, roiMonths,
+      recommendedKvar, panelCost, roiMonths,
       steps: stepResult.steps,
       oversized: stepResult.oversized,
       pfActual,
