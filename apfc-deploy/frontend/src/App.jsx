@@ -31,6 +31,7 @@ function getApiBase() {
 
 // Actual panel SKUs manufactured by DeepAndWide
 const PANEL_CONFIGS = [
+  { rating: 11, steps: [1, 2, 3, 5] },
   { rating: 20, steps: [2, 3, 5, 10] },
   { rating: 25, steps: [2, 3, 5, 5, 10] },
   { rating: 30, steps: [2, 3, 5, 10, 10] },
@@ -49,6 +50,7 @@ const PANEL_CONFIGS = [
 
 function priceForKvar(kvar) {
   if (kvar <= 0) return 0;
+  if (kvar < 21) return 2100;
   if (kvar < 25) return 2000;
   if (kvar <= 35) return 1800;
   return 1500;
@@ -682,7 +684,6 @@ export default function App() {
               <span className="v">{calc.requiredKvarRaw.toFixed(1)} → {calc.recommendedKvar} kVAR</span>
             </div>
             <div className="calc-row"><span className="k">Step Progression</span><span className="v" style={{ fontSize: 12 }}>{calc.steps.join(" • ")}</span></div>
-            <div className="calc-row"><span className="k">Price / kVAR</span><span className="v">₹{calc.pricePerKvar.toLocaleString("en-IN")}</span></div>
             <div className="calc-row"><span className="k">Panel Cost</span><span className="v highlight">{fmtRs(calc.panelCost)}</span></div>
             <div className="calc-row"><span className="k">ROI</span><span className="v highlight">{calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + " months" : "—"}</span></div>
 
@@ -697,7 +698,7 @@ export default function App() {
                 lineHeight: '1.6'
               }}>
                 <strong style={{ color: '#2e7d32', display: 'block', marginBottom: '4px' }}>✓ Custom Configuration</strong>
-                This is a custom panel (>{calc.steps.length} channels). We'll confirm the exact configuration and provide a detailed quote. Call us at <a href="tel:+918374840074" style={{ color: '#2e7d32', fontWeight: 600 }}>+91 83748 40074</a>.
+                This is a custom panel ({'>'}{calc.steps.length} channels). We'll confirm the exact configuration and provide a detailed quote. Call us at <a href="tel:+918374840074" style={{ color: '#2e7d32', fontWeight: 600 }}>+91 83748 40074</a>.
               </div>
             )}
 

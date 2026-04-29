@@ -81,68 +81,70 @@ function grab(text, re) {
   return m ? m[1].trim() : null;
 }
 
+// LT Bill field mappings: fieldName -> [regex, transform]
+const LT_FIELDS = {
+  uscNo: [/USC\s*No\.?\s*:?\s*(\d{6,15})/i],
+  scNo: [/SC\s*No\.?\s*:?\s*([\d\s]{6,20})/i],
+  consumerName: [/Name\s*:?\s*\*?\*?\s*([A-Z][A-Z\s.\/&-]{1,60}?)\s*\*?\*?\s*Address/i],
+  address: [/Address\s*:?\s*([^\n]{5,200}?)(?:\n|CAT)/i],
+  category: [/CAT\s*:?\s*([^\n]+?)(?:\n|PH)/i],
+  connectedLoadKw: [/CONTRACTED\s*LOAD\s*:?\s*([\d.]+)\s*KW/i, parseFloat],
+  recordedMdKw: [/Recorded\s*MD\s*\n?\s*([\d.]+)\s*KW/i, parseFloat],
+  kvah: [/UNITS\s*:?\s*(\d+)/i, parseInt],
+  mf: [/MF\s*:?\s*([\d.]+)/i, parseFloat],
+  billNumber: [/Bill\s*No\.?\s*:?\s*(\d+)/i],
+  billDate: [/DATE\s*:?\s*(\d{2}-\d{2}-\d{4})/i],
+  billingDays: [/DAYS\s*:?\s*(\d+)/i, parseInt],
+  meterNumber: [/METER\s*NO\.?\s*:?\s*([A-Z0-9]+)/i],
+  ero: [/ERO\s*:?\s*([^\n]+?)(?:\n|SEC)/i, s => s?.trim()],
+  section: [/SEC\s*:?\s*([^\n]+?)(?:\n|SC)/i, s => s?.trim()],
+  energyCharges: [/Energy\s*Charges\s*:?\s*([\d.]+)/i, parseFloat],
+  fixedCharges: [/Fixed\s*Charges\s*:?\s*([\d.]+)/i, parseFloat],
+  customerCharges: [/Customer\s*Charges\s*:?\s*([\d.]+)/i, parseFloat],
+  electricityDuty: [/Electricity\s*Duty\s*:?\s*([\d.]+)/i, parseFloat],
+  surcharge: [/Surcharge\s*:?\s*([\d.]+)/i, parseFloat],
+  billAmount: [/BILL\s*AMOUNT\s*\*?\*?\s*([\d.]+)/i, parseFloat],
+  totalDue: [/TOTAL\s*DUE\s*\*?\*?\s*([\d.]+)/i, parseFloat],
+  arrears: [/ARREARS\s*as\s*on\s*[^\n]+\s*([\d.]+)/i, parseFloat],
+  lastPaidDate: [/Last\s*Paid\s*Date\s*:?\s*(\d{2}-\d{2}-\d{4})/i],
+  aaoMobile: [/AAO\s*Mobile\s*No\.?\s*:?\s*(\d{10})/i],
+  adeMobile: [/ADE\s*Mobile\s*No\.?\s*:?\s*(\d{10})/i],
+  phase: [/PH\s*:?\s*(\d)/i, parseInt],
+};
+
 function parseLtBill(html) {
   const text = htmlToText(html);
   const out = { type: "LT", _raw: text.slice(0, 4000) };
-  out.uscNo = grab(text, /USC\s*No\.?\s*:?\s*(\d{6,15})/i);
-  out.scNo = grab(text, /SC\s*No\.?\s*:?\s*([\d\s]{6,20})/i);
-  out.consumerName = grab(text, /Name\s*:?\s*\*?\*?\s*([A-Z][A-Z\s.\/&-]{1,60}?)\s*\*?\*?\s*Address/i);
-  out.address = grab(text, /Address\s*:?\s*([^\n]{5,200}?)(?:\n|CAT)/i);
-  out.category = grab(text, /CAT\s*:?\s*([^\n]+?)(?:\n|PH)/i);
-  const cl = grab(text, /CONTRACTED\s*LOAD\s*:?\s*([\d.]+)\s*KW/i);
-  if (cl) out.connectedLoadKw = parseFloat(cl);
-  const rmd = grab(text, /Recorded\s*MD\s*\n?\s*([\d.]+)\s*KW/i)
-           || grab(text, /Recorded\s*MD\s*:?\s*([\d.]+)/i);
-  if (rmd) out.recordedMdKw = parseFloat(rmd);
 
-  // UNITS field is kVAh (billed units)
-  const units = grab(text, /UNITS\s*:?\s*(\d+)/i);
-  if (units) out.kvah = parseInt(units, 10);
+  // Extract all fields using mapping
+  for (const [field, [regex, transform]] of Object.entries(LT_FIELDS)) {
+    const value = grab(text, regex);
+    if (value) out[field] = transform ? transform(value) : value;
+  }
 
-  // Extract MF first
-  const mf = grab(text, /MF\s*:?\s*([\d.]+)/i)
-          || grab(text, /Multiplying\s*Factor\s*:?\s*([\d.]+)/i);
-  if (mf) out.mf = parseFloat(mf);
-
-  // Extract meter readings from table format:
-  // DATE    STATUS    READING(KWH)
-  // Present    02/04/26    01    229332
-  // Previous   03/03/26    01    221174
-
-  // Match "Present" row - last number is the reading
+  // Extract meter readings from table format and calculate kWh
   const presentMatch = text.match(/Present\s+\d{2}\/\d{2}\/\d{2}\s+\d+\s+(\d+)/i);
-  const presentReading = presentMatch ? parseInt(presentMatch[1], 10) : null;
-
-  // Match "Previous" row - last number is the reading
   const previousMatch = text.match(/Previous\s+\d{2}\/\d{2}\/\d{2}\s+\d+\s+(\d+)/i);
-  const previousReading = previousMatch ? parseInt(previousMatch[1], 10) : null;
 
-  // Calculate kWh from readings
-  if (presentReading && previousReading && mf) {
-    const diff = presentReading - previousReading;
-    out.kwh = Math.round(diff * parseFloat(mf));
+  if (presentMatch && previousMatch && out.mf) {
+    const presentReading = parseInt(presentMatch[1], 10);
+    const previousReading = parseInt(previousMatch[1], 10);
+    out.kwh = Math.round((presentReading - previousReading) * out.mf);
     out.presentReading = presentReading;
     out.previousReading = previousReading;
   }
 
-  // Fallback: try simple patterns if table format failed
-  if (!out.kwh) {
-    const kwhDirect = grab(text, /kWh\s*:?\s*(\d+)/i)
-                   || grab(text, /KWH\s*:?\s*(\d+)/i)
-                   || grab(text, /Consumption\s*\(?\s*kWh\s*\)?\s*:?\s*(\d+)/i);
-    if (kwhDirect) {
-      out.kwh = parseInt(kwhDirect, 10);
-    }
+  // Calculate derived fields
+  if (out.energyCharges && out.kvah) {
+    out.effectiveTariff = parseFloat((out.energyCharges / out.kvah).toFixed(2));
   }
 
-  const billAmt = grab(text, /BILL\s*AMOUNT\s*\*?\*?\s*([\d.]+)/i);
-  if (billAmt) out.billAmount = parseFloat(billAmt);
-  const phase = grab(text, /PH\s*:?\s*(\d)/i);
-  if (phase) out.phase = parseInt(phase, 10);
+  if (out.kwh && out.kvah) {
+    out.powerFactor = parseFloat((out.kwh / out.kvah).toFixed(3));
+  }
 
-  // Debug: Add warning if kWh extraction failed
   if (!out.kwh && out.kvah) {
-    out._kwhWarning = "kWh not found on bill - check meter readings or provide manually";
+    out._kwhWarning = "kWh not calculated - meter readings not found";
   }
 
   return out;
@@ -163,37 +165,43 @@ function parseLtBill(html) {
  *   Energy Charges Ps. 880  (= Rs 8.80 per unit)
  *   Total Amount Payable     582655.00
  */
+
+// HT Bill field mappings: fieldName -> [regex, transform]
+const HT_FIELDS = {
+  scNo: [/Consumer\s*Number\s+([A-Z0-9]{3,20})/i],
+  consumerName: [/Name\s+([A-Z][A-Z0-9\s.,&\/\-()]{2,80}?)\s+(?:Address|Specified|Actual|Feeder|Category)/i],
+  category: [/Category\s+([A-Z0-9\- ]{1,15}?)\s+(?:Address|DESCRIPTIONS|Reading)/i],
+  specifiedVoltageKv: [/Specified\s*Voltage\s*\(KV\)\s+([\d.]+)/i, parseFloat],
+  actualVoltageKv: [/Actual\s*Voltage\s*\(KV\)\s+([\d.]+)/i, parseFloat],
+  feeder: [/Feeder\s+([\d]+(?:\s*\([^)]+\))?)/i],
+  contractedMdKva: [/Contracted\s*MD\s*\(KVA\/HP\)\s+([\d.]+)/i, parseFloat],
+  mf: [/Multiplying\s*Factor\s+(\d+(?:\.\d+)?)/i, parseFloat],
+  billMonth: [/Bill\s*cum\s*Demand\s*Notice\s*for\s*the\s*Month\s*of\s+([A-Za-z]+\s*\d{4})/i],
+  billNumber: [/Bill\s*No\.?\s*:?\s*(\d+)/i],
+  billingDays: [/(?:Billing\s*Period|Period)\s*:?\s*(\d+)\s*days/i, parseInt],
+  demandChargeRate: [/Demand\s*Charges\s*Normal\s+Rs\.\s*([\d.]+)/i, parseFloat],
+};
+
 function parseHtBill(html) {
   const text = htmlToText(html);
   const out = { type: "HT", _raw: text.slice(0, 4000) };
 
-  // Header / identity
-  out.scNo = grab(text, /Consumer\s*Number\s+([A-Z0-9]{3,20})/i);
-  out.consumerName = grab(
-    text,
-    /Name\s+([A-Z][A-Z0-9\s.,&\/\-()]{2,80}?)\s+(?:Address|Specified|Actual|Feeder|Category)/i
-  );
+  // Extract all simple fields using mapping
+  for (const [field, [regex, transform]] of Object.entries(HT_FIELDS)) {
+    const value = grab(text, regex);
+    if (value) out[field] = transform ? transform(value) : value;
+  }
 
-  // Address is split across Address1/2/3
+  // Address is split across Address1/2/3 - needs special handling
   const a1 = grab(text, /Address1\s+([A-Z0-9 .,&\/\-()]{2,80}?)\s+(?:Address2|Specified|Actual|Feeder|Category)/i);
   const a2 = grab(text, /Address2\s+([A-Z0-9 .,&\/\-()]{2,80}?)\s+(?:Address3|Specified|Actual|Feeder|Category)/i);
   const a3 = grab(text, /Address3\s+([A-Z0-9 .,&\/\-()]{2,80}?)\s+(?:Specified|Actual|Feeder|Category|DESCRIPTIONS)/i);
   out.address = [a1, a2, a3].filter(Boolean).join(", ") || null;
 
-  out.category = grab(text, /Category\s+([A-Z0-9\- ]{1,15}?)\s+(?:Address|DESCRIPTIONS|Reading)/i);
-  out.specifiedVoltageKv = (() => {
-    const v = grab(text, /Specified\s*Voltage\s*\(KV\)\s+([\d.]+)/i);
-    return v ? parseFloat(v) : null;
-  })();
-  out.actualVoltageKv = (() => {
-    const v = grab(text, /Actual\s*Voltage\s*\(KV\)\s+([\d.]+)/i);
-    return v ? parseFloat(v) : null;
-  })();
-  out.feeder = grab(text, /Feeder\s+([\d]+(?:\s*\([^)]+\))?)/i);
-
-  // Demand
-  const cmd = grab(text, /Contracted\s*MD\s*\(KVA\/HP\)\s+([\d.]+)/i);
-  if (cmd) out.contractedMdKva = parseFloat(cmd);
+  // Bill date has multiple patterns
+  const billDate = grab(text, /Bill\s*Date\s*:?\s*(\d{2}[-\/]\d{2}[-\/]\d{4})/i)
+                || grab(text, /Date\s*:?\s*(\d{2}[-\/]\d{2}[-\/]\d{4})/i);
+  if (billDate) out.billDate = billDate;
 
   // Total Consumption row gives us KWH, KVAH, KVA (the KVA value here is RMD)
   // Pattern: "Total Consumption {KWH} {KVAH} {KVA} {TOD1} {TOD2}"
@@ -214,11 +222,7 @@ function parseHtBill(html) {
     if (kvah) out.kvah = parseInt(kvah, 10);
   }
 
-  // Multiplying factor
-  const mf = grab(text, /Multiplying\s*Factor\s+(\d+(?:\.\d+)?)/i);
-  if (mf) out.mf = parseFloat(mf);
-
-  // Tariff: "Energy Charges Ps. 880" => 8.80 Rs/unit
+  // Energy charge rate: "Energy Charges Ps. 880" => 8.80 Rs/unit
   const ecPs = grab(text, /Energy\s*Charges\s+Ps\.\s*(\d+)/i);
   if (ecPs) {
     out.energyChargeRate = parseInt(ecPs, 10) / 100; // paise -> rupees
@@ -227,11 +231,7 @@ function parseHtBill(html) {
     if (ecRs) out.energyChargeRate = parseFloat(ecRs);
   }
 
-  // Demand charge rate (₹/kVA/month)
-  const dcRs = grab(text, /Demand\s*Charges\s*Normal\s+Rs\.\s*([\d.]+)/i);
-  if (dcRs) out.demandChargeRate = parseFloat(dcRs);
-
-  // Bill totals
+  // Bill amounts - need to strip commas
   const billAmt = grab(text, /Total\s*Amount\s*Payable\s+([\d.,]+)/i)
               || grab(text, /Net\s*Bill\s*Amount\s+([\d.,]+)/i)
               || grab(text, /Gross\s*Total\s+([\d.,]+)/i);
@@ -240,13 +240,35 @@ function parseHtBill(html) {
   const subTotal = grab(text, /Sub\s*Total\s+([\d.,]+)/i);
   if (subTotal) out.subTotal = parseFloat(subTotal.replace(/,/g, ""));
 
-  // Bill month / period
-  const billMonth = grab(text, /Bill\s*cum\s*Demand\s*Notice\s*for\s*the\s*Month\s*of\s+([A-Za-z]+\s*\d{4})/i);
-  if (billMonth) out.billMonth = billMonth;
+  const totalEnergyCharges = grab(text, /Energy\s*Charges\s*Rs\.?\s*([\d.,]+)/i)
+                          || grab(text, /Total\s*Energy\s*Charges\s*([\d.,]+)/i);
+  if (totalEnergyCharges) out.totalEnergyCharges = parseFloat(totalEnergyCharges.replace(/,/g, ""));
+
+  const fixedCharges = grab(text, /Fixed\s*Charges\s*([\d.,]+)/i);
+  if (fixedCharges) out.fixedCharges = parseFloat(fixedCharges.replace(/,/g, ""));
+
+  const demandCharges = grab(text, /Demand\s*Charges\s*(?:Normal)?\s*([\d.,]+)/i);
+  if (demandCharges) out.demandCharges = parseFloat(demandCharges.replace(/,/g, ""));
+
+  const customerCharges = grab(text, /Customer\s*Charges\s*([\d.,]+)/i);
+  if (customerCharges) out.customerCharges = parseFloat(customerCharges.replace(/,/g, ""));
+
+  // Calculate effective tariff if we have total energy charges and kvah
+  if (out.totalEnergyCharges && out.kvah) {
+    out.effectiveTariff = parseFloat((out.totalEnergyCharges / out.kvah).toFixed(2));
+  } else if (out.energyChargeRate) {
+    // Use the rate directly if total charges not available
+    out.effectiveTariff = out.energyChargeRate;
+  }
 
   // Connected load equivalent — HT bills don't list kW; convert from contracted kVA at 0.9 PF assumed
   if (out.contractedMdKva && !out.connectedLoadKw) {
     out.contractedLoadKwApprox = Math.round(out.contractedMdKva * 0.9);
+  }
+
+  // Calculate actual power factor from bill data
+  if (out.kwh && out.kvah) {
+    out.powerFactor = parseFloat((out.kwh / out.kvah).toFixed(3));
   }
 
   return out;
