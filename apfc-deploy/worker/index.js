@@ -94,14 +94,28 @@ function parseLtBill(html) {
   const rmd = grab(text, /Recorded\s*MD\s*\n?\s*([\d.]+)\s*KW/i)
            || grab(text, /Recorded\s*MD\s*:?\s*([\d.]+)/i);
   if (rmd) out.recordedMdKw = parseFloat(rmd);
+
+  // UNITS field is kVAh (billed units)
   const units = grab(text, /UNITS\s*:?\s*(\d+)/i);
-  if (units) out.kwh = parseInt(units, 10);
-  const kvah = grab(text, /kVAh\s*:?\s*(\d+)/i) || grab(text, /KVAH\s*:?\s*(\d+)/i);
-  if (kvah) out.kvah = parseInt(kvah, 10);
+  if (units) out.kvah = parseInt(units, 10);
+
+  // Calculate kWh from meter readings
+  const presentReading = grab(text, /Present\s*Reading\s*:?\s*(\d+)/i)
+                      || grab(text, /P\.?R\.?\s*:?\s*(\d+)/i);
+  const previousReading = grab(text, /Previous\s*Reading\s*:?\s*(\d+)/i)
+                       || grab(text, /Prev\.?\s*Reading\s*:?\s*(\d+)/i);
+  const mf = grab(text, /MF\s*:?\s*([\d.]+)/i);
+
+  if (presentReading && previousReading && mf) {
+    const diff = parseInt(presentReading, 10) - parseInt(previousReading, 10);
+    out.kwh = Math.round(diff * parseFloat(mf));
+    out.mf = parseFloat(mf);
+    out.presentReading = parseInt(presentReading, 10);
+    out.previousReading = parseInt(previousReading, 10);
+  }
+
   const billAmt = grab(text, /BILL\s*AMOUNT\s*\*?\*?\s*([\d.]+)/i);
   if (billAmt) out.billAmount = parseFloat(billAmt);
-  const mf = grab(text, /MF\s*:?\s*([\d.]+)/i);
-  if (mf) out.mf = parseFloat(mf);
   const phase = grab(text, /PH\s*:?\s*(\d)/i);
   if (phase) out.phase = parseInt(phase, 10);
   return out;
