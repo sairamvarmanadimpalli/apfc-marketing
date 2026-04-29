@@ -49,17 +49,18 @@ const PANEL_CONFIGS = [
   { rating: 120, steps: [2, 3, 5, 10, 20, 20, 20, 20, 20] },
 ];
 
-// Calculate cost for a single capacitor step (20% reduced from original)
+// Calculate cost for a single capacitor step
 function priceForStep(stepKvar) {
   if (stepKvar === 1) return 2400;
   if (stepKvar === 2) return 4000;
   if (stepKvar === 3) return 6000;
   if (stepKvar === 5) return 8000;
-  if (stepKvar === 10) return 14400;
-  if (stepKvar === 20) return 24000;
-  if (stepKvar === 40) return 48000;
-  // Fallback for any other size
-  return stepKvar * 1200;
+  // After 5 kVAR: minimum ₹1400 per kVAR
+  if (stepKvar === 10) return 14000;
+  if (stepKvar === 20) return 28000;
+  if (stepKvar === 40) return 56000;
+  // Fallback for any other size: ₹1400/kVAR minimum
+  return stepKvar * 1400;
 }
 
 // Calculate total panel cost from step configuration
