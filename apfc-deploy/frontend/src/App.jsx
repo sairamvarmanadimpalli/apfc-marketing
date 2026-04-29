@@ -58,23 +58,45 @@ function pickStepProgression(requiredKvar) {
   // Round up required kVAR to nearest 5
   const rounded = Math.ceil(requiredKvar / 5) * 5;
 
-  // Find the smallest panel that meets or exceeds the requirement
+  // Find the smallest standard panel that meets or exceeds the requirement
   const panel = PANEL_CONFIGS.find(p => p.rating >= rounded);
 
-  // If no standard panel fits, use the largest available (120 kVAR)
-  if (!panel) {
-    const largest = PANEL_CONFIGS[PANEL_CONFIGS.length - 1];
+  if (panel) {
     return {
-      steps: largest.steps,
-      total: largest.rating,
-      oversized: true // Flag to indicate customer needs custom panel
+      steps: panel.steps,
+      total: panel.rating,
+      oversized: false
     };
   }
 
+  // For loads > 120 kVAR, build custom configuration
+  // Can use up to 16 channels, then combine capacitors (20+20=40) per channel
+  const baseSteps = [2, 3, 5]; // First 3 channels = 10 kVAR
+  let remaining = rounded - 10;
+  const steps = [...baseSteps];
+
+  // Fill channels 4-16 with 10s and 20s
+  const availableSteps = [20, 10]; // Prefer 20 over 10 for efficiency
+
+  while (remaining > 0 && steps.length < 16) {
+    // Pick largest step that doesn't overshoot by more than 10 kVAR
+    const step = availableSteps.find(s => s <= remaining + 10) || availableSteps[availableSteps.length - 1];
+    steps.push(step);
+    remaining -= step;
+  }
+
+  // If still need more capacity, combine 20+20 in additional channels
+  while (remaining > 0) {
+    steps.push(40); // Combined 20+20 per channel
+    remaining -= 40;
+  }
+
+  const total = steps.reduce((sum, s) => sum + s, 0);
+
   return {
-    steps: panel.steps,
-    total: panel.rating,
-    oversized: false
+    steps,
+    total,
+    oversized: total > 120 // Show note for custom configs
   };
 }
 
@@ -638,14 +660,14 @@ export default function App() {
               <div style={{
                 marginTop: '16px',
                 padding: '12px 16px',
-                background: '#fff8e1',
-                border: '2px solid #f57c00',
+                background: '#e8f5e9',
+                border: '2px solid #2e7d32',
                 borderRadius: '8px',
                 fontSize: '13px',
                 lineHeight: '1.6'
               }}>
-                <strong style={{ color: '#f57c00', display: 'block', marginBottom: '4px' }}>⚠️ Custom Panel Required</strong>
-                This load requires more than 120 kVAR. We'll design a custom panel configuration for you. Please contact us at <a href="tel:+918374840074" style={{ color: '#f57c00', fontWeight: 600 }}>+91 83748 40074</a> for a detailed quote.
+                <strong style={{ color: '#2e7d32', display: 'block', marginBottom: '4px' }}>✓ Custom Configuration</strong>
+                This is a custom panel (>{calc.steps.length} channels). We'll confirm the exact configuration and provide a detailed quote. Call us at <a href="tel:+918374840074" style={{ color: '#2e7d32', fontWeight: 600 }}>+91 83748 40074</a>.
               </div>
             )}
 
