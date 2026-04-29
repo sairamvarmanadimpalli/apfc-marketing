@@ -32,6 +32,7 @@ function getApiBase() {
 // Actual panel SKUs manufactured by DeepAndWide
 const PANEL_CONFIGS = [
   { rating: 11, steps: [1, 2, 3, 5] },
+  { rating: 15, steps: [2, 3, 5, 5] },
   { rating: 20, steps: [2, 3, 5, 10] },
   { rating: 25, steps: [2, 3, 5, 5, 10] },
   { rating: 30, steps: [2, 3, 5, 10, 10] },
