@@ -64,8 +64,25 @@ function priceForStep(stepKvar) {
 }
 
 // Calculate total panel cost from step configuration
-function calculatePanelCost(steps) {
-  return steps.reduce((total, step) => total + priceForStep(step), 0);
+function calculatePanelCost(steps, customAddon = 0, withoutInstallation = false) {
+  let baseCost = steps.reduce((total, step) => total + priceForStep(step), 0);
+
+  // Add custom addon cost (1 or 2 kVAR)
+  if (customAddon > 0) {
+    baseCost += priceForStep(customAddon);
+  }
+
+  // Add ₹3000 minimum charge if panel cost < ₹40,000
+  if (baseCost < 40000) {
+    baseCost += 3000;
+  }
+
+  // Apply 5% discount if without installation
+  if (withoutInstallation) {
+    baseCost = baseCost * 0.95;
+  }
+
+  return Math.round(baseCost);
 }
 
 function pickStepProgression(requiredKvar) {
@@ -169,6 +186,8 @@ export default function App() {
   const [fetchMsg, setFetchMsg] = useState("");
   const [billPreview, setBillPreview] = useState(null);
   const [resolvedType, setResolvedType] = useState(null);
+  const [customAddon, setCustomAddon] = useState(0); // 0, 1, or 2 kVAR
+  const [withoutInstallation, setWithoutInstallation] = useState(false);
 
   // Re-detect type when SC number changes (if user hasn't manually picked)
   useEffect(() => {
@@ -209,8 +228,8 @@ export default function App() {
 
     const requiredKvar = Math.ceil(requiredKvarRaw / 5) * 5 || 0;
     const stepResult = pickStepProgression(requiredKvar);
-    const recommendedKvar = stepResult.total;
-    const panelCost = calculatePanelCost(stepResult.steps);
+    const recommendedKvar = stepResult.total + customAddon;
+    const panelCost = calculatePanelCost(stepResult.steps, customAddon, withoutInstallation);
     const avgCostPerKvar = recommendedKvar > 0 ? Math.round(panelCost / recommendedKvar) : 0;
     const roiMonths = monthlyLossRs > 0 ? panelCost / monthlyLossRs : 0;
     return {
@@ -220,7 +239,7 @@ export default function App() {
       oversized: stepResult.oversized,
       pfActual,
     };
-  }, [connectedLoad, recordedMd, kwh, kvah, tariff, resolvedType]);
+  }, [connectedLoad, recordedMd, kwh, kvah, tariff, resolvedType, customAddon, withoutInstallation]);
 
   const handleFetch = async () => {
     if (!scno.trim()) {
@@ -695,8 +714,85 @@ export default function App() {
               </span>
               <span className="v">{calc.requiredKvarRaw.toFixed(1)} → {calc.recommendedKvar} kVAR</span>
             </div>
-            <div className="calc-row"><span className="k">Step Progression</span><span className="v" style={{ fontSize: 12 }}>{calc.steps.join(" • ")}</span></div>
+            <div className="calc-row"><span className="k">Step Progression</span><span className="v" style={{ fontSize: 12 }}>{calc.steps.join(" • ")}{customAddon > 0 ? ` + ${customAddon}` : ""}</span></div>
+
+            <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(0,0,0,0.02)', borderRadius: '8px', border: '1px solid var(--line)' }}>
+              <div style={{ marginBottom: '8px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.1em', color: 'var(--ink-soft)', textTransform: 'uppercase' }}>Options</div>
+
+              <div style={{ marginBottom: '10px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={withoutInstallation}
+                    onChange={(e) => setWithoutInstallation(e.target.checked)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <span>Without Installation (5% discount)</span>
+                </label>
+              </div>
+
+              <div>
+                <div style={{ fontSize: '12px', marginBottom: '6px', color: 'var(--ink-soft)' }}>Custom Add-on:</div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    onClick={() => setCustomAddon(0)}
+                    style={{
+                      flex: 1,
+                      padding: '6px 12px',
+                      fontSize: '12px',
+                      border: customAddon === 0 ? '2px solid var(--accent-dark)' : '1px solid var(--line)',
+                      background: customAddon === 0 ? 'var(--accent-dark)' : 'white',
+                      color: customAddon === 0 ? 'white' : 'var(--ink)',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontWeight: customAddon === 0 ? 600 : 400
+                    }}
+                  >None</button>
+                  <button
+                    onClick={() => setCustomAddon(1)}
+                    style={{
+                      flex: 1,
+                      padding: '6px 12px',
+                      fontSize: '12px',
+                      border: customAddon === 1 ? '2px solid var(--accent-dark)' : '1px solid var(--line)',
+                      background: customAddon === 1 ? 'var(--accent-dark)' : 'white',
+                      color: customAddon === 1 ? 'white' : 'var(--ink)',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontWeight: customAddon === 1 ? 600 : 400
+                    }}
+                  >+1 kVAR</button>
+                  <button
+                    onClick={() => setCustomAddon(2)}
+                    style={{
+                      flex: 1,
+                      padding: '6px 12px',
+                      fontSize: '12px',
+                      border: customAddon === 2 ? '2px solid var(--accent-dark)' : '1px solid var(--line)',
+                      background: customAddon === 2 ? 'var(--accent-dark)' : 'white',
+                      color: customAddon === 2 ? 'white' : 'var(--ink)',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontWeight: customAddon === 2 ? 600 : 400
+                    }}
+                  >+2 kVAR</button>
+                </div>
+              </div>
+            </div>
+
             <div className="calc-row"><span className="k">Panel Cost</span><span className="v highlight">{fmtRs(calc.panelCost)}</span></div>
+            {(() => {
+              const baseCost = calculatePanelCost(calc.steps, 0, false);
+              const withAddon = customAddon > 0 ? calculatePanelCost(calc.steps, customAddon, false) : baseCost;
+              const hasMinCharge = baseCost < 40000;
+              return (baseCost < 40000 || customAddon > 0 || withoutInstallation) && (
+                <div style={{ fontSize: '11px', color: 'var(--ink-soft)', marginTop: '-8px', marginBottom: '8px', paddingLeft: '4px' }}>
+                  {hasMinCharge && <div>Incl. ₹3,000 minimum charge</div>}
+                  {customAddon > 0 && <div>+₹{priceForStep(customAddon).toLocaleString("en-IN")} for {customAddon} kVAR add-on</div>}
+                  {withoutInstallation && <div>5% discount applied</div>}
+                </div>
+              );
+            })()}
             <div className="calc-row"><span className="k">Avg. Cost / kVAR</span><span className="v">₹{calc.avgCostPerKvar.toLocaleString("en-IN")}</span></div>
             <div className="calc-row"><span className="k">ROI</span><span className="v highlight">{calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + " months" : "—"}</span></div>
 
