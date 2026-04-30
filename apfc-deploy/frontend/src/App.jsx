@@ -214,6 +214,11 @@ export default function App() {
     const k = parseInt(kwh, 10) || 0;
     const va = parseInt(kvah, 10) || 0;
     const t = parseFloat(tariff) || 0;
+
+    // Debug logging
+    console.log('[APFC Debug] Raw values:', { connectedLoad, recordedMd, kwh, kvah, tariff, resolvedType });
+    console.log('[APFC Debug] Parsed values:', { cl, rmd, k, va, t });
+
     const reactiveDiff = Math.max(0, va - k);
     const monthlyLossRs = reactiveDiff * t;
     const annualLossRs = monthlyLossRs * 12;
