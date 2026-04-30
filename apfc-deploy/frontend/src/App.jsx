@@ -218,20 +218,21 @@ export default function App() {
     const monthlyLossRs = reactiveDiff * t;
     const annualLossRs = monthlyLossRs * 12;
 
-    // kVAR sizing differs by service type:
-    //   LT: RMD is in kW. Required kVAR = RMD_kW × 0.8 (Sairam's rule).
-    //   HT: RMD is in kVA. Convert to kW using actual PF from bill (PF = kWh/kVAh),
-    //       then apply × 0.8.
+    // kVAR sizing:
+    //   LT: Contracted Load (kW) × 0.8
+    //   HT: RMD (kVA) × 0.8
     let requiredKvarRaw = 0;
     let pfActual = null;
+
+    // Calculate PF for reference/display
+    pfActual = va > 0 ? k / va : null;
+
     if (resolvedType === "HT") {
-      // Average PF over billing period
-      pfActual = va > 0 ? k / va : null;
-      const rmdKw = pfActual ? rmd * pfActual : rmd * 0.9; // assume 0.9 if PF unknown
-      requiredKvarRaw = rmdKw * 0.8;
-    } else {
-      // LT
+      // HT: RMD (kVA) × 0.8
       requiredKvarRaw = rmd * 0.8;
+    } else {
+      // LT: Contracted Load (kW) × 0.8
+      requiredKvarRaw = cl * 0.8;
     }
 
     const requiredKvar = Math.ceil(requiredKvarRaw / 5) * 5 || 0;
@@ -781,7 +782,7 @@ export default function App() {
             <div className="calc-row"><span className="k">Annual Loss</span><span className="v">{fmtRs(calc.annualLossRs)}</span></div>
             <div className="calc-row">
               <span className="k">
-                Required kVAR ({resolvedType === "HT" ? "RMD·PF·0.8" : "RMD × 0.8"})
+                Required kVAR ({resolvedType === "HT" ? "RMD × 0.8" : "CL × 0.8"})
               </span>
               <span className="v">{calc.requiredKvarRaw.toFixed(1)} → {calc.recommendedKvar} kVAR</span>
             </div>
