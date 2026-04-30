@@ -343,7 +343,7 @@ export default function App() {
 
     try {
       // Google Apps Script Web App URL (needs to be deployed by user)
-      const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyRxG8k9DCaTerZXG3Ey8kU_2o07seQDDPeCcKjnclcnRdPgBmO3h_TjxSOeZVc7zY/exec";
+      const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyQFq8Ps_MwZc3COzIaa-FLNkC3dFtRlMwQWFLXtju1L32ltkPewiYGKAuOy5jGON4/exec";
 
       const leadData = {
         timestamp: new Date().toISOString(),
