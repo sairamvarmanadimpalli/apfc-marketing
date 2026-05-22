@@ -985,7 +985,8 @@ export default function App() {
               <div className="brand">DeepAndWide Technologies Pvt. Ltd.</div>
               <div className="sc-rmd-row">
                 <span>SC: <strong>{scno || "—"}</strong></span>
-                <span>RMD: <strong>{recordedMd || "—"}</strong> {resolvedType === "HT" ? "kVA" : "kW"}</span>
+                <span>MF: <strong>{billPreview?.mf || "1"}</strong></span>
+                <span>RMD: <strong>{recordedMd || "—"}</strong></span>
               </div>
               <div className="card-grid">
                 <div className="field-row"><span className="lbl">kVAh</span><span className="val">{kvah || "—"}</span></div>
