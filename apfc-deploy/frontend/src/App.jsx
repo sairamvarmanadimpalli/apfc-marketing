@@ -188,7 +188,7 @@ export default function App() {
   const [resolvedType, setResolvedType] = useState(null);
   const [customAddon, setCustomAddon] = useState(0); // 0, 1, or 2 kVAR
   const [withoutInstallation, setWithoutInstallation] = useState(false);
-  const [mf, setMf] = useState("1"); // Multiplication factor
+  const [mf, setMf] = useState("NA"); // Multiplication factor
 
   // Customer information
   const [custName, setCustName] = useState("");
@@ -986,19 +986,19 @@ export default function App() {
             <div className="pitch-card">
               <div className="brand">DeepAndWide Technologies Pvt. Ltd.</div>
               <div className="sc-rmd-row">
-                <span>SC: <strong>{scno || "—"}</strong></span>
+                <span>SC: <strong>{scno || "NA"}</strong></span>
                 <span>MF: <strong>{mf}</strong></span>
-                <span>RMD: <strong>{recordedMd || "—"}</strong></span>
+                <span>RMD: <strong>{recordedMd || "NA"}</strong></span>
               </div>
               <div className="card-grid">
-                <div className="field-row"><span className="lbl">kVAh</span><span className="val">{kvah || "—"}</span></div>
-                <div className="field-row"><span className="lbl">C.L</span><span className="val">{connectedLoad || "—"}</span></div>
-                <div className="field-row"><span className="lbl">kWh</span><span className="val">{kwh || "—"}</span></div>
-                <div className="field-row"><span className="lbl">kVAR</span><span className="val">{calc.recommendedKvar || "—"}</span></div>
-                <div className="field-row"><span className="lbl">Diff</span><span className="val">{calc.reactiveDiff || "—"}</span></div>
-                <div className="field-row"><span className="lbl">Cost</span><span className="val">₹{calc.panelCost ? calc.panelCost.toLocaleString("en-IN") : "—"}</span></div>
-                <div className="field-row"><span className="lbl">Loss</span><span className="val">₹{Math.round(calc.monthlyLossRs).toLocaleString("en-IN")}</span></div>
-                <div className="field-row"><span className="lbl">ROI</span><span className="val">{calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + "M" : "—"}</span></div>
+                <div className="field-row"><span className="lbl">kVAh</span><span className="val">{kvah || "NA"}</span></div>
+                <div className="field-row"><span className="lbl">C.L</span><span className="val">{connectedLoad || "NA"}</span></div>
+                <div className="field-row"><span className="lbl">kWh</span><span className="val">{kwh || "NA"}</span></div>
+                <div className="field-row"><span className="lbl">kVAR</span><span className="val">{calc.recommendedKvar || "NA"}</span></div>
+                <div className="field-row"><span className="lbl">Diff</span><span className="val">{calc.reactiveDiff || "NA"}</span></div>
+                <div className="field-row"><span className="lbl">Cost</span><span className="val">{calc.panelCost ? "₹" + calc.panelCost.toLocaleString("en-IN") : "NA"}</span></div>
+                <div className="field-row"><span className="lbl">Loss</span><span className="val">{calc.monthlyLossRs > 0 ? "₹" + Math.round(calc.monthlyLossRs).toLocaleString("en-IN") : "NA"}</span></div>
+                <div className="field-row"><span className="lbl">ROI</span><span className="val">{calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + "M" : "NA"}</span></div>
               </div>
               <div className="card-footer">
                 <span>{(resolvedType || "—")} · {customerName ? customerName.toUpperCase().slice(0, 22) : "CUSTOMER"}</span>
