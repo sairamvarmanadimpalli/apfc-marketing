@@ -675,13 +675,24 @@
     .roi-calc .subtitle{font-size:13px;margin-bottom:24px}
     .roi-field input{padding:12px 14px;font-size:14px}
     .roi-btn{width:100%;justify-content:center;padding:14px}
+    .roi-grid{grid-template-columns:repeat(2,1fr) !important;gap:12px}
     .roi-stat{padding:16px}
     .roi-stat .value{font-size:22px}
     .roi-stat .label{font-size:10px}
-    .roi-summary{flex-direction:column;text-align:center;padding:20px}
-    .roi-summary .msg{text-align:center}
+    .roi-stat .unit{font-size:11px}
+    .roi-summary{flex-direction:column;text-align:center;padding:20px;gap:16px}
+    .roi-summary .msg{text-align:center;font-size:14px}
     .roi-summary .payback{font-size:24px}
     .roi-warning{font-size:12px;padding:14px}
+
+    /* Savings graph mobile */
+    .savings-graph{padding:16px}
+    .graph-bars{height:100px;gap:12px}
+    .graph-bar .value{font-size:12px}
+    .graph-bar .label{font-size:10px}
+
+    /* Print button row */
+    .print-btn{flex:1;justify-content:center;min-width:140px}
 
     /* Steps */
     .step{padding:22px}
@@ -715,12 +726,91 @@
     .hero h1{font-size:28px}
     .hero-card .big{font-size:36px}
     .section-title{font-size:24px}
-    .calc-row{grid-template-columns:1fr;gap:6px;text-align:left}
+
+    /* Calculator table card layout */
+    .calc-table{border-radius:var(--radius)}
+    .calc-row{
+      grid-template-columns:1fr;gap:8px;text-align:left;
+      padding:16px;background:white;
+    }
+    .calc-row:not(:last-child){border-bottom:2px solid var(--line)}
     .calc-row.head{display:none}
-    .calc-row .monthly::before{content:"Bill: ";color:var(--ink-soft);font-weight:400}
-    .calc-row .save::before{content:"Save: ";font-weight:400;color:var(--ink-soft)}
-    .calc-row .year::before{content:"Year: ";color:var(--ink-soft)}
-    .calc-row .year{font-size:12px}
+    .calc-row .monthly{
+      font-size:15px;font-weight:700;color:var(--ink);
+      margin-bottom:4px;
+    }
+    .calc-row .monthly::before{
+      content:"Monthly Bill: ";color:var(--ink-soft);font-weight:500;
+      font-size:11px;text-transform:uppercase;letter-spacing:0.03em;
+      display:block;margin-bottom:2px;
+    }
+    .calc-row .save{
+      font-size:14px;display:inline-block;
+      background:var(--accent-light);padding:4px 8px;
+      border-radius:4px;
+    }
+    .calc-row .save::before{
+      content:"Save/mo: ";font-weight:500;color:var(--ink-soft);
+      font-size:10px;
+    }
+    .calc-row .year{
+      font-size:12px;margin-top:4px;display:block;
+    }
+    .calc-row .year::before{
+      content:"Save/year: ";color:var(--ink-soft);font-weight:500;
+    }
+    .calc-row.highlight{
+      background:var(--accent-light);
+      border:2px solid var(--accent);
+      border-radius:var(--radius);
+      margin:8px 0;
+    }
+    .calc-row.highlight .save{
+      background:var(--accent);color:white;
+    }
+
+    /* ROI Calculator mobile tweaks */
+    .roi-calc{padding:16px;border-radius:var(--radius)}
+    .roi-calc h3{font-size:16px}
+    .roi-calc .subtitle{font-size:12px;margin-bottom:16px}
+    .roi-field label{font-size:11px}
+    .roi-field input{padding:10px 12px;font-size:14px}
+    .roi-field .hint{font-size:10px}
+    .roi-btn{padding:12px;font-size:13px}
+
+    /* ROI Results mobile */
+    .roi-results h4{font-size:14px;margin-bottom:16px}
+    .roi-grid{grid-template-columns:1fr 1fr !important;gap:8px !important}
+    .roi-stat{padding:12px}
+    .roi-stat .label{font-size:9px}
+    .roi-stat .value{font-size:18px}
+    .roi-stat .unit{font-size:10px}
+    .roi-summary{
+      flex-direction:column;gap:12px;
+      padding:16px;text-align:center;
+    }
+    .roi-summary .msg{font-size:13px}
+    .roi-summary .payback{font-size:20px}
+    .roi-warning{font-size:11px;padding:12px}
+
+    /* Savings graph mobile */
+    .savings-graph{padding:14px}
+    .savings-graph h5{font-size:11px;margin-bottom:12px}
+    .graph-bars{height:100px;gap:10px}
+    .graph-bar .value{font-size:11px}
+    .graph-bar .label{font-size:9px}
+  }
+
+  /* Medium-small mobile (481-600px) */
+  @media (max-width:600px) and (min-width:381px){
+    .roi-grid{grid-template-columns:repeat(2,1fr) !important}
+    .roi-stat .value{font-size:20px}
+    .roi-stat .label{font-size:10px}
+    .roi-summary{
+      flex-direction:column;text-align:center;gap:14px;
+    }
+    .calc-grid{gap:32px}
+    .graph-bars{height:100px}
   }
 
   /* ═══ SCROLL PROGRESS BAR ═══ */
@@ -793,6 +883,8 @@
   }
   body.dark .mobile-cta{background:var(--paper-warm);border-color:var(--line)}
   body.dark .dark-toggle{background:var(--paper-warm)}
+  body.dark .print-btn{background:var(--paper-warm);border-color:var(--line)}
+  body.dark .print-btn:hover{background:var(--accent-light);border-color:var(--accent)}
 
   /* ═══ EXIT INTENT POPUP ═══ */
   .exit-popup{
@@ -895,11 +987,176 @@
 
   /* ═══ PRINT STYLES ═══ */
   @media print{
+    /* Hide non-essential elements */
     .scroll-progress,.back-to-top,.mobile-cta,.dark-toggle,
-    .exit-popup,nav,.share-actions{display:none !important}
-    body{padding:0 !important}
+    .exit-popup,nav,.share-actions,.print-hide{display:none !important}
+
+    /* Reset body */
+    body{
+      padding:0 !important;
+      background:#fff !important;
+      color:#000 !important;
+      font-size:12pt;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+
+    /* Section spacing */
     .hero{min-height:auto;padding:40px 20px}
-    section.block{padding:40px 20px}
+    section.block{padding:40px 20px;page-break-inside:avoid}
+
+    /* Calculator print styles */
+    .roi-calc{
+      background:#fff !important;
+      border:2px solid #000 !important;
+      box-shadow:none !important;
+      padding:24px !important;
+      page-break-inside:avoid;
+    }
+    .roi-calc h3{color:#000 !important;font-size:16pt !important}
+    .roi-inputs{display:none !important}
+    .roi-btn{display:none !important}
+    .roi-results{
+      display:block !important;
+      border-top:2px solid #000 !important;
+      margin-top:16px !important;
+      padding-top:16px !important;
+    }
+    .roi-grid{gap:12px !important}
+    .roi-stat{
+      background:#f5f5f5 !important;
+      border:1px solid #ccc !important;
+      padding:12px !important;
+    }
+    .roi-stat.highlight{
+      background:#000 !important;
+      color:#fff !important;
+    }
+    .roi-stat .label{
+      color:#666 !important;
+      font-size:9pt !important;
+    }
+    .roi-stat.highlight .label{color:#ccc !important}
+    .roi-stat .value{
+      color:#000 !important;
+      font-size:14pt !important;
+    }
+    .roi-stat.highlight .value{color:#fff !important}
+    .roi-summary{
+      background:#f0f0f0 !important;
+      border:2px solid #000 !important;
+      color:#000 !important;
+    }
+    .roi-summary .msg{color:#333 !important}
+    .roi-summary .payback{color:#000 !important;font-weight:900 !important}
+    .roi-warning{
+      background:#fff !important;
+      border:1px dashed #666 !important;
+      color:#333 !important;
+      font-size:10pt !important;
+    }
+
+    /* Savings graph print */
+    .savings-graph{
+      background:#f9f9f9 !important;
+      border:1px solid #ccc !important;
+      page-break-inside:avoid;
+    }
+    .graph-bar .bar{
+      background:#333 !important;
+      border:1px solid #000 !important;
+    }
+    .graph-bar .value{color:#000 !important}
+    .graph-bar .label{color:#333 !important}
+
+    /* Calculator table print */
+    .calc-table{
+      background:#fff !important;
+      border:2px solid #000 !important;
+      box-shadow:none !important;
+    }
+    .calc-row{
+      border-bottom:1px solid #ccc !important;
+      padding:10px 16px !important;
+    }
+    .calc-row.head{
+      background:#000 !important;
+      color:#fff !important;
+    }
+    .calc-row.highlight{
+      background:#e8e8e8 !important;
+    }
+    .calc-row .save{
+      color:#000 !important;
+      font-weight:700 !important;
+    }
+    .calc-row .year{color:#333 !important}
+
+    /* Print button visibility */
+    .print-btn{display:none !important}
+
+    /* Ensure links are visible */
+    a{color:#000 !important;text-decoration:underline}
+
+    /* Page break controls */
+    .faq,.segments,.benefits{page-break-before:always}
+    details{page-break-inside:avoid}
+  }
+
+  /* ═══ PRINT BUTTON FOR CALCULATOR ═══ */
+  .print-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--sand);color:var(--ink);
+    padding:12px 20px;border-radius:var(--radius);
+    font-size:13px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line);transition:all .2s;
+  }
+  .print-btn:hover{
+    background:var(--accent-light);border-color:var(--accent);
+    color:var(--accent-dark);
+  }
+  .print-btn svg{width:16px;height:16px}
+  @media(max-width:720px){
+    .print-btn{padding:10px 14px;font-size:12px;gap:6px}
+    .print-btn svg{width:14px;height:14px}
+  }
+
+  /* ═══ CALCULATOR-ONLY PRINT MODE ═══ */
+  @media print{
+    body.print-calculator-mode .hero,
+    body.print-calculator-mode .problem,
+    body.print-calculator-mode .solution,
+    body.print-calculator-mode .benefits,
+    body.print-calculator-mode .segments,
+    body.print-calculator-mode .steps,
+    body.print-calculator-mode #calculator,
+    body.print-calculator-mode .faq,
+    body.print-calculator-mode .cta-block,
+    body.print-calculator-mode footer.site,
+    body.print-calculator-mode .calc-grid{
+      display:none !important;
+    }
+    body.print-calculator-mode .calc{
+      padding:20px !important;
+    }
+    body.print-calculator-mode .roi-calc{
+      margin:0 !important;
+      max-width:100% !important;
+    }
+    body.print-calculator-mode .roi-calc::before{
+      content:"APFC Panel Savings Estimate — DeepAndWide Technologies";
+      display:block;font-size:14pt;font-weight:700;
+      margin-bottom:16px;padding-bottom:12px;
+      border-bottom:2px solid #000;
+      text-align:center;
+    }
+    body.print-calculator-mode .roi-calc::after{
+      content:"Contact: +91 83748 40074 | hello@deepandwide.in | Hyderabad · Tirupati · Goa · Muramalla";
+      display:block;font-size:10pt;
+      margin-top:20px;padding-top:12px;
+      border-top:1px solid #ccc;
+      text-align:center;color:#666;
+    }
   }
 
 </style>
@@ -1401,6 +1658,21 @@
         <div class="roi-warning">
           <strong>Note:</strong> This is an estimate based on typical commercial tariffs. Actual savings depend on your specific tariff structure, power factor penalties, and equipment usage patterns. <b>Send your bill via WhatsApp</b> for an exact calculation.
         </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;">
+          <button class="print-btn" onclick="printCalculatorResults()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            Print / Save as PDF
+          </button>
+          <button class="print-btn" onclick="shareCalculatorResults()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+            Share Results
+          </button>
+        </div>
       </div>
     </div>
 
@@ -1879,6 +2151,76 @@
       window.print();
     }
   });
+
+  // ═══ CALCULATOR PRINT/SHARE FUNCTIONS ═══
+  function printCalculatorResults() {
+    // Check if results are visible
+    const results = document.getElementById('roi-results');
+    if (!results.classList.contains('show')) {
+      alert('Please calculate your savings first before printing.');
+      return;
+    }
+
+    // Add print-mode class for calculator-specific print
+    document.body.classList.add('print-calculator-mode');
+
+    // Trigger print dialog
+    window.print();
+
+    // Remove the class after print dialog closes
+    setTimeout(() => {
+      document.body.classList.remove('print-calculator-mode');
+    }, 1000);
+  }
+
+  function shareCalculatorResults() {
+    // Check if results are visible
+    const results = document.getElementById('roi-results');
+    if (!results.classList.contains('show')) {
+      alert('Please calculate your savings first before sharing.');
+      return;
+    }
+
+    // Get calculated values
+    const pf = document.getElementById('res-pf').textContent;
+    const saveMonth = document.getElementById('res-save-month').textContent;
+    const saveYear = document.getElementById('res-save-year').textContent;
+    const payback = document.getElementById('res-payback').textContent;
+    const roi = document.getElementById('res-roi').textContent;
+
+    const shareText = `APFC Panel Savings Estimate:
+⚡ Current Power Factor: ${pf}
+💰 Monthly Savings: ${saveMonth}
+📅 Annual Savings: ${saveYear}
+🔄 ROI: ${roi}
+⏱️ Payback: ${payback}
+
+Get your free bill audit at: ${window.location.origin}`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'My APFC Savings Estimate',
+        text: shareText,
+        url: window.location.href
+      }).catch(() => {
+        // Fallback to clipboard
+        copyResultsToClipboard(shareText);
+      });
+    } else {
+      copyResultsToClipboard(shareText);
+    }
+  }
+
+  function copyResultsToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = event.target.closest('.print-btn');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+      setTimeout(() => { btn.innerHTML = originalHTML; }, 2500);
+    }).catch(() => {
+      alert('Unable to copy. Please select and copy manually.');
+    });
+  }
 </script>
 
 </body>

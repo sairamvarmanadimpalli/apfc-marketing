@@ -975,6 +975,20 @@ export default function App() {
           <div className="card-wrap">
             <div className="pitch-card">
               <div className="brand">DeepAndWide Technologies Pvt. Ltd.</div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginTop: '8px',
+                padding: '6px 10px',
+                background: 'rgba(255,255,255,0.15)',
+                borderRadius: '6px',
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: '11px'
+              }}>
+                <span style={{ letterSpacing: '0.1em' }}>SC: <strong>{scno || "—"}</strong></span>
+                <span style={{ letterSpacing: '0.1em' }}>RMD: <strong>{recordedMd || "—"}</strong> {resolvedType === "HT" ? "kVA" : "kW"}</span>
+              </div>
               <div className="card-grid">
                 <div className="field-row"><span className="lbl">kVAh</span><span className="val">{kvah || "—"}</span></div>
                 <div className="field-row"><span className="lbl">C.L</span><span className="val">{connectedLoad || "—"}</span></div>
