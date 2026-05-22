@@ -614,9 +614,9 @@ export default function App() {
         /* Print card */
         .card-wrap { display: flex; justify-content: center; padding: 32px 0; }
         .pitch-card {
-          width: 400px; aspect-ratio: 1.6 / 1;
+          width: 380px;
           background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-          color: white; padding: 18px 22px;
+          color: white; padding: 16px 20px;
           border-radius: calc(var(--radius) * 1.5);
           box-shadow: var(--shadow-lg); position: relative; overflow: hidden;
         }
@@ -626,40 +626,41 @@ export default function App() {
           pointer-events: none;
         }
         .brand {
-          font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+          font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;
           font-family: 'JetBrains Mono', monospace; font-weight: 700;
-          color: white; text-align: center; padding-bottom: 8px;
+          color: white; text-align: center; padding-bottom: 6px;
           border-bottom: 1px solid rgba(255,255,255,0.3); position: relative;
         }
         .sc-rmd-row {
           display: flex; justify-content: space-between; align-items: center;
-          margin-top: 6px; padding: 5px 8px;
+          margin-top: 6px; padding: 4px 8px;
           background: rgba(255,255,255,0.15); border-radius: 4px;
-          font-family: 'JetBrains Mono', monospace; font-size: 10px;
-          letter-spacing: 0.08em;
+          font-family: 'JetBrains Mono', monospace; font-size: 9px;
+          letter-spacing: 0.05em;
         }
         .card-grid {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px;
-          margin-top: 10px; font-family: 'JetBrains Mono', monospace;
-          font-size: 10px; position: relative;
+          display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px;
+          margin-top: 8px; font-family: 'JetBrains Mono', monospace;
+          font-size: 9px; position: relative;
         }
         .field-row {
-          display: flex; justify-content: space-between; align-items: center; gap: 6px;
+          display: flex; justify-content: space-between; align-items: center; gap: 4px;
         }
         .field-row .lbl {
-          letter-spacing: 0.12em; text-transform: uppercase; font-size: 8px;
+          letter-spacing: 0.1em; text-transform: uppercase; font-size: 7px;
           color: rgba(255,255,255,0.9); font-weight: 700;
         }
         .field-row .val {
           background: white; color: var(--accent-dark);
-          padding: 3px 8px; font-weight: 700; font-size: 10px;
-          min-width: 55px; text-align: center; letter-spacing: 0.03em;
+          padding: 2px 6px; font-weight: 700; font-size: 9px;
+          min-width: 50px; text-align: center; letter-spacing: 0.02em;
           border-radius: 3px;
         }
         .card-footer {
-          position: absolute; bottom: 8px; left: 22px; right: 22px;
+          margin-top: 10px; padding-top: 8px;
+          border-top: 1px solid rgba(255,255,255,0.2);
           font-size: 7px; font-family: 'JetBrains Mono', monospace;
-          letter-spacing: 0.15em; color: rgba(255,255,255,0.8);
+          letter-spacing: 0.1em; color: rgba(255,255,255,0.8);
           display: flex; justify-content: space-between;
         }
 
