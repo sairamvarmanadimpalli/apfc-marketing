@@ -614,9 +614,9 @@ export default function App() {
         /* Print card */
         .card-wrap { display: flex; justify-content: center; padding: 32px 0; }
         .pitch-card {
-          width: 380px; aspect-ratio: 1.75 / 1;
+          width: 400px; aspect-ratio: 1.6 / 1;
           background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-          color: white; padding: 24px 26px;
+          color: white; padding: 18px 22px;
           border-radius: calc(var(--radius) * 1.5);
           box-shadow: var(--shadow-lg); position: relative; overflow: hidden;
         }
@@ -626,33 +626,40 @@ export default function App() {
           pointer-events: none;
         }
         .brand {
-          font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+          font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
           font-family: 'JetBrains Mono', monospace; font-weight: 700;
-          color: white; text-align: center; padding-bottom: 12px;
+          color: white; text-align: center; padding-bottom: 8px;
           border-bottom: 1px solid rgba(255,255,255,0.3); position: relative;
         }
+        .sc-rmd-row {
+          display: flex; justify-content: space-between; align-items: center;
+          margin-top: 6px; padding: 5px 8px;
+          background: rgba(255,255,255,0.15); border-radius: 4px;
+          font-family: 'JetBrains Mono', monospace; font-size: 10px;
+          letter-spacing: 0.08em;
+        }
         .card-grid {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px;
-          margin-top: 16px; font-family: 'JetBrains Mono', monospace;
-          font-size: 11px; position: relative;
+          display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px;
+          margin-top: 10px; font-family: 'JetBrains Mono', monospace;
+          font-size: 10px; position: relative;
         }
         .field-row {
-          display: flex; justify-content: space-between; align-items: center; gap: 8px;
+          display: flex; justify-content: space-between; align-items: center; gap: 6px;
         }
         .field-row .lbl {
-          letter-spacing: 0.15em; text-transform: uppercase; font-size: 9px;
+          letter-spacing: 0.12em; text-transform: uppercase; font-size: 8px;
           color: rgba(255,255,255,0.9); font-weight: 700;
         }
         .field-row .val {
           background: white; color: var(--accent-dark);
-          padding: 4px 10px; font-weight: 700; font-size: 11px;
-          min-width: 60px; text-align: center; letter-spacing: 0.05em;
-          border-radius: 4px;
+          padding: 3px 8px; font-weight: 700; font-size: 10px;
+          min-width: 55px; text-align: center; letter-spacing: 0.03em;
+          border-radius: 3px;
         }
         .card-footer {
-          position: absolute; bottom: 10px; left: 26px; right: 26px;
-          font-size: 8px; font-family: 'JetBrains Mono', monospace;
-          letter-spacing: 0.2em; color: rgba(255,255,255,0.8);
+          position: absolute; bottom: 8px; left: 22px; right: 22px;
+          font-size: 7px; font-family: 'JetBrains Mono', monospace;
+          letter-spacing: 0.15em; color: rgba(255,255,255,0.8);
           display: flex; justify-content: space-between;
         }
 
@@ -975,19 +982,9 @@ export default function App() {
           <div className="card-wrap">
             <div className="pitch-card">
               <div className="brand">DeepAndWide Technologies Pvt. Ltd.</div>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: '8px',
-                padding: '6px 10px',
-                background: 'rgba(255,255,255,0.15)',
-                borderRadius: '6px',
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: '11px'
-              }}>
-                <span style={{ letterSpacing: '0.1em' }}>SC: <strong>{scno || "—"}</strong></span>
-                <span style={{ letterSpacing: '0.1em' }}>RMD: <strong>{recordedMd || "—"}</strong> {resolvedType === "HT" ? "kVA" : "kW"}</span>
+              <div className="sc-rmd-row">
+                <span>SC: <strong>{scno || "—"}</strong></span>
+                <span>RMD: <strong>{recordedMd || "—"}</strong> {resolvedType === "HT" ? "kVA" : "kW"}</span>
               </div>
               <div className="card-grid">
                 <div className="field-row"><span className="lbl">kVAh</span><span className="val">{kvah || "—"}</span></div>
