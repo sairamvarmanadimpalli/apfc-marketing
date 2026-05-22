@@ -175,6 +175,7 @@ const HT_FIELDS = {
   actualVoltageKv: [/Actual\s*Voltage\s*\(KV\)\s+([\d.]+)/i, parseFloat],
   feeder: [/Feeder\s+([\d]+(?:\s*\([^)]+\))?)/i],
   contractedMdKva: [/Contracted\s*MD\s*\(KVA\/HP\)\s+([\d.]+)/i, parseFloat],
+  // MF can appear as "Multiplying Factor 1000" or "MF: 1000" or with newlines
   mf: [/Multiplying\s*Factor\s+(\d+(?:\.\d+)?)/i, parseFloat],
   billMonth: [/Bill\s*cum\s*Demand\s*Notice\s*for\s*the\s*Month\s*of\s+([A-Za-z]+\s*\d{4})/i],
   billNumber: [/Bill\s*No\.?\s*:?\s*(\d+)/i],
@@ -192,10 +193,19 @@ function parseHtBill(html) {
     if (value) out[field] = transform ? transform(value) : value;
   }
 
+  // Fallback MF extraction if primary regex failed
+  // Try alternate patterns: "MF 1000" or first number after "Multiplying Factor" row
+  if (!out.mf) {
+    const altMf = grab(text, /(?:MF|M\.F\.?)\s*:?\s*(\d+(?:\.\d+)?)/i)
+               || grab(text, /Multiplying\s+Factor[\s\n]+(\d+)/i);
+    if (altMf) out.mf = parseFloat(altMf);
+  }
+
   // Address is split across Address1/2/3 - needs special handling
-  const a1 = grab(text, /Address1\s+([A-Z0-9 .,&\/\-()]{2,80}?)\s+(?:Address2|Specified|Actual|Feeder|Category)/i);
-  const a2 = grab(text, /Address2\s+([A-Z0-9 .,&\/\-()]{2,80}?)\s+(?:Address3|Specified|Actual|Feeder|Category)/i);
-  const a3 = grab(text, /Address3\s+([A-Z0-9 .,&\/\-()]{2,80}?)\s+(?:Specified|Actual|Feeder|Category|DESCRIPTIONS)/i);
+  // Character class includes colon for addresses like "SYNO: 292 TO 296"
+  const a1 = grab(text, /Address1\s+([A-Z0-9 .,&\/\-():]{2,80}?)\s+(?:Address2|Specified|Actual|Feeder|Category)/i);
+  const a2 = grab(text, /Address2\s+([A-Z0-9 .,&\/\-():]{2,80}?)\s+(?:Address3|Specified|Actual|Feeder|Category)/i);
+  const a3 = grab(text, /Address3\s+([A-Z0-9 .,&\/\-():]{2,80}?)\s+(?:Specified|Actual|Feeder|Category|DESCRIPTIONS)/i);
   out.address = [a1, a2, a3].filter(Boolean).join(", ") || null;
 
   // Bill date has multiple patterns

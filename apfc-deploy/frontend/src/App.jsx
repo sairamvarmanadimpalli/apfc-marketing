@@ -233,8 +233,9 @@ export default function App() {
     pfActual = va > 0 ? k / va : null;
 
     if (resolvedType === "HT") {
-      // HT: RMD (kVA) × 0.8
-      requiredKvarRaw = rmd * 0.8;
+      // HT: Use max of Contracted MD (cl) or Recorded MD (rmd) × 0.8
+      // This ensures proper sizing even when recorded demand is low (new/seasonal connections)
+      requiredKvarRaw = Math.max(cl, rmd) * 0.8;
     } else {
       // LT: Contracted Load (kW) × 0.8
       requiredKvarRaw = cl * 0.8;
@@ -787,7 +788,7 @@ export default function App() {
             <div className="calc-row"><span className="k">Annual Loss</span><span className="v">{fmtRs(calc.annualLossRs)}</span></div>
             <div className="calc-row">
               <span className="k">
-                Required kVAR ({resolvedType === "HT" ? "RMD × 0.8" : "CL × 0.8"})
+                Required kVAR ({resolvedType === "HT" ? "max(CMD,RMD) × 0.8" : "CL × 0.8"})
               </span>
               <span className="v">{calc.requiredKvarRaw.toFixed(1)} → {calc.recommendedKvar} kVAR</span>
             </div>
