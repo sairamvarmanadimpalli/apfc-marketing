@@ -188,6 +188,7 @@ export default function App() {
   const [resolvedType, setResolvedType] = useState(null);
   const [customAddon, setCustomAddon] = useState(0); // 0, 1, or 2 kVAR
   const [withoutInstallation, setWithoutInstallation] = useState(false);
+  const [mf, setMf] = useState("1"); // Multiplication factor
 
   // Customer information
   const [custName, setCustName] = useState("");
@@ -302,6 +303,7 @@ export default function App() {
 
       if (d.kwh) setKwh(String(d.kwh));
       if (d.kvah) setKvah(String(d.kvah));
+      if (d.mf) setMf(String(d.mf));
 
       // Auto-fill tariff from bill's actual energy charge rate (HT only — LT bills don't expose this clearly)
       if (d.energyChargeRate) setTariff(String(d.energyChargeRate));
@@ -614,11 +616,11 @@ export default function App() {
         /* Print card */
         .card-wrap { display: flex; justify-content: center; padding: 32px 0; }
         .pitch-card {
-          width: 380px;
+          width: 360px;
           background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-          color: white; padding: 16px 20px;
+          color: white; padding: 14px 16px;
           border-radius: calc(var(--radius) * 1.5);
-          box-shadow: var(--shadow-lg); position: relative; overflow: hidden;
+          box-shadow: var(--shadow-lg); position: relative; overflow: visible;
         }
         .pitch-card::before {
           content: ''; position: absolute; inset: 0;
@@ -626,41 +628,41 @@ export default function App() {
           pointer-events: none;
         }
         .brand {
-          font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;
+          font-size: 7px; letter-spacing: 0.15em; text-transform: uppercase;
           font-family: 'JetBrains Mono', monospace; font-weight: 700;
-          color: white; text-align: center; padding-bottom: 6px;
+          color: white; text-align: center; padding-bottom: 5px;
           border-bottom: 1px solid rgba(255,255,255,0.3); position: relative;
         }
         .sc-rmd-row {
           display: flex; justify-content: space-between; align-items: center;
-          margin-top: 6px; padding: 4px 8px;
-          background: rgba(255,255,255,0.15); border-radius: 4px;
-          font-family: 'JetBrains Mono', monospace; font-size: 9px;
-          letter-spacing: 0.05em;
+          margin-top: 5px; padding: 3px 6px;
+          background: rgba(255,255,255,0.15); border-radius: 3px;
+          font-family: 'JetBrains Mono', monospace; font-size: 8px;
+          letter-spacing: 0.03em;
         }
         .card-grid {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px;
-          margin-top: 8px; font-family: 'JetBrains Mono', monospace;
-          font-size: 9px; position: relative;
+          display: grid; grid-template-columns: 1fr 1fr; gap: 5px 10px;
+          margin-top: 6px; font-family: 'JetBrains Mono', monospace;
+          font-size: 8px; position: relative;
         }
         .field-row {
-          display: flex; justify-content: space-between; align-items: center; gap: 4px;
+          display: flex; justify-content: space-between; align-items: center; gap: 3px;
         }
         .field-row .lbl {
-          letter-spacing: 0.1em; text-transform: uppercase; font-size: 7px;
+          letter-spacing: 0.08em; text-transform: uppercase; font-size: 6px;
           color: rgba(255,255,255,0.9); font-weight: 700;
         }
         .field-row .val {
           background: white; color: var(--accent-dark);
-          padding: 2px 6px; font-weight: 700; font-size: 9px;
-          min-width: 50px; text-align: center; letter-spacing: 0.02em;
-          border-radius: 3px;
+          padding: 2px 5px; font-weight: 700; font-size: 8px;
+          min-width: 45px; text-align: center; letter-spacing: 0.01em;
+          border-radius: 2px;
         }
         .card-footer {
-          margin-top: 10px; padding-top: 8px;
+          margin-top: 8px; padding-top: 6px;
           border-top: 1px solid rgba(255,255,255,0.2);
-          font-size: 7px; font-family: 'JetBrains Mono', monospace;
-          letter-spacing: 0.1em; color: rgba(255,255,255,0.8);
+          font-size: 6px; font-family: 'JetBrains Mono', monospace;
+          letter-spacing: 0.08em; color: rgba(255,255,255,0.8);
           display: flex; justify-content: space-between;
         }
 
@@ -985,7 +987,7 @@ export default function App() {
               <div className="brand">DeepAndWide Technologies Pvt. Ltd.</div>
               <div className="sc-rmd-row">
                 <span>SC: <strong>{scno || "—"}</strong></span>
-                <span>MF: <strong>{billPreview?.mf || "1"}</strong></span>
+                <span>MF: <strong>{mf}</strong></span>
                 <span>RMD: <strong>{recordedMd || "—"}</strong></span>
               </div>
               <div className="card-grid">
