@@ -79,7 +79,7 @@ _If the numbers don't work, we'll tell you honestly._
 
 🌐 *Website:* apfc.deepandwide.in
 📱 *WhatsApp:* +91 83748 40074
-📧 *Email:* hello@deepandwide.in
+📧 *Email:* sairam@deepandwide.in
 
 *DeepAndWide Technologies Pvt. Ltd.*
 _Hyderabad · Tirupati · Goa · Muramalla_
