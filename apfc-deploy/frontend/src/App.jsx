@@ -165,7 +165,19 @@ function pickStepProgression(requiredKvar) {
 function detectType(scno) {
   const s = (scno || "").trim().toUpperCase();
   if (/^[A-Z]{2,4}\d+$/.test(s)) return "HT";
-  if (/^\d{6,15}$/.test(s)) return "LT";
+  if (/^\d{6,16}$/.test(s)) return "LT";
+  return null;
+}
+
+// Detect utility based on SC number format
+function detectUtility(scno) {
+  const s = (scno || "").trim();
+  // APEPDCL LT: 16-digit USC or 8-digit legacy
+  if (/^\d{16}$/.test(s)) return "APEPDCL";
+  if (/^\d{8}$/.test(s)) return "APEPDCL";
+  // TSSPDCL: 9-digit typical, or alpha-numeric HT
+  if (/^\d{9,15}$/.test(s)) return "TSSPDCL";
+  if (/^[A-Z]{2,4}\d+$/i.test(s)) return "TSSPDCL";
   return null;
 }
 
@@ -176,6 +188,7 @@ export default function App() {
   const [apiBase] = useState(getApiBase());
   const [scno, setScno] = useState("");
   const [serviceType, setServiceType] = useState("AUTO"); // AUTO | LT | HT
+  const [utility, setUtility] = useState("AUTO"); // AUTO | TSSPDCL | APEPDCL
   const [customerName, setCustomerName] = useState("");
   const [connectedLoad, setConnectedLoad] = useState("");
   const [recordedMd, setRecordedMd] = useState("");
@@ -186,6 +199,7 @@ export default function App() {
   const [fetchMsg, setFetchMsg] = useState("");
   const [billPreview, setBillPreview] = useState(null);
   const [resolvedType, setResolvedType] = useState(null);
+  const [resolvedUtility, setResolvedUtility] = useState(null);
   const [customAddon, setCustomAddon] = useState(0); // 0, 1, or 2 kVAR
   const [withoutInstallation, setWithoutInstallation] = useState(false);
   const [mf, setMf] = useState("NA"); // Multiplication factor
@@ -198,7 +212,7 @@ export default function App() {
   const [submitState, setSubmitState] = useState("idle"); // idle | submitting | success | error
   const [submitMsg, setSubmitMsg] = useState("");
 
-  // Re-detect type when SC number changes (if user hasn't manually picked)
+  // Re-detect type and utility when SC number changes (if user hasn't manually picked)
   useEffect(() => {
     if (serviceType === "AUTO") {
       const t = detectType(scno);
@@ -206,7 +220,14 @@ export default function App() {
     } else {
       setResolvedType(serviceType);
     }
-  }, [scno, serviceType]);
+
+    if (utility === "AUTO") {
+      const u = detectUtility(scno);
+      if (u) setResolvedUtility(u);
+    } else {
+      setResolvedUtility(utility);
+    }
+  }, [scno, serviceType, utility]);
 
   // Calculations
   const calc = useMemo(() => {
@@ -224,23 +245,98 @@ export default function App() {
     const monthlyLossRs = reactiveDiff * t;
     const annualLossRs = monthlyLossRs * 12;
 
-    // kVAR sizing:
-    //   LT: Contracted Load (kW) × 0.8
-    //   HT: RMD (kVA) × 0.8
+    // Smart kVAR sizing based on actual power factor and usage patterns
     let requiredKvarRaw = 0;
     let pfActual = null;
+    let sizingBasis = "CL";
+    let sizingMethod = "PF"; // PF-based or fallback
 
-    // Calculate PF for reference/display
+    // Step 1: Calculate actual power factor from bill
     pfActual = va > 0 ? k / va : null;
 
-    if (resolvedType === "HT") {
-      // HT: Use max of Contracted MD (cl) or Recorded MD (rmd) × 0.8
-      // This ensures proper sizing even when recorded demand is low (new/seasonal connections)
-      requiredKvarRaw = Math.max(cl, rmd) * 0.8;
+    // Step 2: Smart base load selection based on utilization pattern
+    // Utilization ratio tells us how the connection is being used
+    const utilization = cl > 0 ? rmd / cl : 1;
+    let baseLoad;
+
+    // sizingNote provides plain-English context for the sizing decision
+    let sizingNote = "";
+
+    if (rmd <= 0 || cl <= 0) {
+      // Missing data - use whichever is available
+      baseLoad = rmd > 0 ? rmd : cl;
+      sizingBasis = rmd > 0 ? "RMD" : "CL";
+      sizingNote = "using available data";
+    } else if (utilization > 1.1) {
+      // Significantly overloaded (>110%) - size for actual demand
+      baseLoad = rmd;
+      sizingBasis = "RMD";
+      sizingNote = "you're drawing more than contracted";
+    } else if (utilization > 1.0) {
+      // Slightly overloaded - size for actual demand
+      baseLoad = rmd;
+      sizingBasis = "RMD";
+      sizingNote = "sized on actual demand";
+    } else if (utilization < 0.5) {
+      // Severely under-utilized (<50%) - likely seasonal or backup connection
+      baseLoad = rmd;
+      sizingBasis = "RMD";
+      sizingNote = "sized conservatively for actual usage";
+    } else if (utilization < 0.8) {
+      // Under-utilized - size for actual demand to avoid over-design
+      baseLoad = rmd;
+      sizingBasis = "RMD";
+      sizingNote = "sized for actual demand, not over-designed";
     } else {
-      // LT: Contracted Load (kW) × 0.8
-      requiredKvarRaw = cl * 0.8;
+      // Normal utilization (80-100%) - size for contracted capacity
+      baseLoad = cl;
+      sizingBasis = "CL";
+      sizingNote = "sized for contracted load";
     }
+
+    // Step 3: Calculate kVAR multiplier based on actual PF
+    // Formula: kVAR = kW × (tan(acos(PF_current)) - tan(acos(PF_target)))
+    const targetPF = 0.99;
+    let kvarMultiplier;
+
+    if (pfActual && pfActual > 0.5 && pfActual < 0.99) {
+      // Use actual PF-based calculation
+      const tanCurrent = Math.tan(Math.acos(pfActual));
+      const tanTarget = Math.tan(Math.acos(targetPF));
+      kvarMultiplier = tanCurrent - tanTarget;
+      sizingMethod = "PF";
+    } else if (pfActual && pfActual >= 0.99) {
+      // PF already excellent - minimal correction needed
+      kvarMultiplier = 0.15;
+      sizingMethod = "MIN";
+    } else {
+      // No valid PF data - assume poor PF (~0.80)
+      kvarMultiplier = 0.60; // tan(acos(0.80)) - tan(acos(0.99)) ≈ 0.60
+      sizingMethod = "EST";
+    }
+
+    // Step 4: Apply safety margin
+    // 10% margin for peak demand variations
+    const safetyMargin = 1.1;
+
+    requiredKvarRaw = baseLoad * kvarMultiplier * safetyMargin;
+
+    // Step 5: Ensure minimum viable panel (11 kVAR smallest)
+    // But only if there's actual reactive loss
+    if (reactiveDiff > 100 && requiredKvarRaw < 11) {
+      requiredKvarRaw = 11;
+    }
+
+    console.log('[APFC Sizing]', {
+      pfActual: pfActual?.toFixed(3),
+      utilization: utilization.toFixed(2),
+      baseLoad,
+      sizingBasis,
+      sizingNote,
+      kvarMultiplier: kvarMultiplier.toFixed(3),
+      sizingMethod,
+      requiredKvarRaw: requiredKvarRaw.toFixed(1)
+    });
 
     const requiredKvar = Math.ceil(requiredKvarRaw / 5) * 5 || 0;
     const stepResult = pickStepProgression(requiredKvar);
@@ -254,6 +350,12 @@ export default function App() {
       steps: stepResult.steps,
       oversized: stepResult.oversized,
       pfActual,
+      sizingBasis,
+      sizingNote,
+      sizingMethod,
+      baseLoad,
+      kvarMultiplier,
+      utilization,
     };
   }, [connectedLoad, recordedMd, kwh, kvah, tariff, resolvedType, customAddon, withoutInstallation]);
 
@@ -269,12 +371,13 @@ export default function App() {
       setFetchMsg("Could not detect HT/LT — please pick manually above.");
       return;
     }
+    const util = utility === "AUTO" ? (detectUtility(scno.trim()) || "TSSPDCL") : utility;
     setFetchState("loading");
-    setFetchMsg(`Fetching ${type} bill from TGSPDCL…`);
+    setFetchMsg(`Fetching ${type} bill from ${util}…`);
     setBillPreview(null);
 
     try {
-      const url = `${apiBase}/api/bill?scno=${encodeURIComponent(scno.trim())}&type=${type}`;
+      const url = `${apiBase}/api/bill?scno=${encodeURIComponent(scno.trim())}&type=${type}&utility=${util}`;
       const resp = await fetch(url);
       const json = await resp.json();
       if (!json.ok) {
@@ -284,6 +387,7 @@ export default function App() {
       }
       const d = json.data || {};
       setResolvedType(json.type);
+      setResolvedUtility(json.utility || "TSSPDCL");
       if (d.consumerName) setCustomerName(d.consumerName);
 
       // HT bills: contracted MD is in kVA. Use approx kW for display, or use contractedMdKva.
@@ -310,6 +414,7 @@ export default function App() {
 
       setBillPreview({
         type: json.type,
+        utility: json.utility || "TSSPDCL",
         name: d.consumerName,
         address: d.address,
         category: d.category,
@@ -319,20 +424,24 @@ export default function App() {
         rmd: rmdVal,
         units: d.kwh,
         kvah: d.kvah,
-        billAmt: d.billAmount,
+        billAmt: d.billAmount || d.netBillAmount || d.totalAmount,
         mf: d.mf,
         pf: d.powerFactor,
-        rate: d.energyChargeRate,
+        rate: d.energyChargeRate || d.effectiveTariff,
         billMonth: d.billMonth,
+        billDate: d.billDate,
         feeder: d.feeder,
         voltage: d.specifiedVoltageKv,
         sourceUrl: json.sourceUrl,
+        govtSubsidy: d.govtSubsidy,
+        aquaSubsidy: d.aquaSubsidy,
       });
       setFetchState("success");
+      const utilLabel = json.utility || "TSSPDCL";
       setFetchMsg(
         d.kvah
-          ? `${json.type} bill auto-filled. Verify before sharing.`
-          : `${json.type} bill fetched. kVAh not on this bill — enter manually if available.`
+          ? `${json.type} bill from ${utilLabel} auto-filled. Verify before sharing.`
+          : `${json.type} bill from ${utilLabel} fetched. kVAh not on this bill — enter manually if available.`
       );
     } catch (e) {
       setFetchState("error");
@@ -693,28 +802,37 @@ export default function App() {
       <nav className="app-nav">
         <div className="nav-inner">
           <div className="logo">Deep<span>&</span>Wide</div>
-          <div className="nav-kicker">APFC Calculator · TSSPDCL</div>
+          <div className="nav-kicker">APFC Calculator · {resolvedUtility || "TSSPDCL"} {resolvedUtility === "APEPDCL" ? "(AP Eastern)" : "(Telangana)"}</div>
         </div>
       </nav>
 
       <div className="container">
         <div className="header">
           <h1><em>APFC</em> Calculator</h1>
-          <div className="sub">Auto-size panels and calculate ROI from TSSPDCL bills — LT and HT supported</div>
+          <div className="sub">Auto-size panels and calculate ROI from TSSPDCL &amp; APEPDCL bills — LT and HT supported</div>
         </div>
 
         <div className="grid">
           <div className="panel">
             <h2>
-              <span className="num">1</span>Service Lookup
+              <span className="num">1</span>Your connection
               {resolvedType && <span className="type-badge">{resolvedType}</span>}
+              {resolvedUtility && <span className="type-badge" style={{ marginLeft: 4, background: resolvedUtility === "APEPDCL" ? "#e8f5e9" : "var(--accent-light)", color: resolvedUtility === "APEPDCL" ? "#2e7d32" : "var(--accent-dark)" }}>{resolvedUtility}</span>}
             </h2>
             <div className="field">
-              <label>SC Number (LT digits like 113400807, HT codes like MCL3800)</label>
+              <label>Utility / DISCOM</label>
+              <select value={utility} onChange={(e) => setUtility(e.target.value)}>
+                <option value="AUTO">AUTO — detect from SC number</option>
+                <option value="TSSPDCL">TSSPDCL — Telangana Southern</option>
+                <option value="APEPDCL">APEPDCL — AP Eastern</option>
+              </select>
+            </div>
+            <div className="field">
+              <label>SC / USC Number {resolvedUtility === "APEPDCL" ? "(16-digit USC like 1413290408002001)" : "(9-digit like 113400807, HT like MCL3800)"}</label>
               <input
                 value={scno}
                 onChange={(e) => setScno(e.target.value)}
-                placeholder="e.g. 113400807 or MCL3800"
+                placeholder={resolvedUtility === "APEPDCL" ? "e.g. 1413290408002001" : "e.g. 113400807 or MCL3800"}
                 onKeyDown={(e) => e.key === "Enter" && handleFetch()}
               />
             </div>
@@ -730,7 +848,7 @@ export default function App() {
               <button className="btn-primary" onClick={handleFetch} disabled={fetchState === "loading"}>
                 {fetchState === "loading"
                   ? <><Loader2 size={16} className="spin" /> Fetching…</>
-                  : <><RefreshCw size={16} /> Fetch from TGSPDCL</>}
+                  : <><RefreshCw size={16} /> Fetch from {resolvedUtility || "TSSPDCL"}</>}
               </button>
               {billPreview?.sourceUrl && (
                 <a href={billPreview.sourceUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost">
@@ -752,8 +870,9 @@ export default function App() {
 
             {billPreview && (
               <div className="preview">
-                <div><span className="pk">TYPE</span><span className="pv">{billPreview.type}</span></div>
+                <div><span className="pk">TYPE</span><span className="pv">{billPreview.type} · {billPreview.utility}</span></div>
                 {billPreview.billMonth && (<div><span className="pk">MONTH</span><span className="pv">{billPreview.billMonth}</span></div>)}
+                {billPreview.billDate && !billPreview.billMonth && (<div><span className="pk">DATE</span><span className="pv">{billPreview.billDate}</span></div>)}
                 {billPreview.name && (<div><span className="pk">NAME</span><span className="pv">{billPreview.name}</span></div>)}
                 {billPreview.address && (<div><span className="pk">ADDR</span><span className="pv">{billPreview.address}</span></div>)}
                 {billPreview.category && (<div><span className="pk">CAT</span><span className="pv">{billPreview.category}</span></div>)}
@@ -767,12 +886,14 @@ export default function App() {
                 {billPreview.pf && (<div><span className="pk">PF</span><span className="pv">{billPreview.pf}</span></div>)}
                 {billPreview.rate && (<div><span className="pk">RATE</span><span className="pv">₹{billPreview.rate}/unit</span></div>)}
                 {billPreview.billAmt && (<div><span className="pk">BILL</span><span className="pv">₹{billPreview.billAmt.toLocaleString("en-IN")}</span></div>)}
+                {billPreview.govtSubsidy > 0 && (<div><span className="pk">SUBSIDY</span><span className="pv">₹{billPreview.govtSubsidy.toLocaleString("en-IN")} (Govt)</span></div>)}
+                {billPreview.aquaSubsidy > 0 && (<div><span className="pk">AQUA</span><span className="pv">₹{billPreview.aquaSubsidy.toLocaleString("en-IN")} (Aqua)</span></div>)}
                 {billPreview.mf && (<div><span className="pk">MF</span><span className="pv">{billPreview.mf}</span></div>)}
               </div>
             )}
 
             <div style={{ height: 32 }} />
-            <h2><span className="num">2</span>Bill Parameters</h2>
+            <h2><span className="num">2</span>Your bill</h2>
             <div className="field"><label>Customer Name</label><input value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="e.g. B SRINIVAS" /></div>
             <div className="row2">
               <div className="field"><label>Connected Load (kW)</label><input value={connectedLoad} onChange={(e) => setConnectedLoad(e.target.value)} placeholder="39" /></div>
@@ -786,23 +907,38 @@ export default function App() {
           </div>
 
           <div className="panel">
-            <h2><span className="num">3</span>Computed Values</h2>
+            <h2><span className="num">3</span>The math</h2>
             {calc.pfActual && (
               <div className="calc-row">
-                <span className="k">Power Factor (kWh / kVAh)</span>
-                <span className="v">{calc.pfActual.toFixed(3)}</span>
+                <span className="k">Power factor</span>
+                <span className="v" style={{ color: calc.pfActual < 0.9 ? 'var(--brick)' : calc.pfActual < 0.95 ? 'var(--mustard)' : 'var(--moss)' }}>
+                  {calc.pfActual.toFixed(2)} — {calc.pfActual < 0.9 ? 'you\'re losing money here' : calc.pfActual < 0.95 ? 'room to improve' : 'healthy'}
+                </span>
               </div>
             )}
-            <div className="calc-row"><span className="k">Reactive Diff (kVAh − kWh)</span><span className="v">{calc.reactiveDiff.toLocaleString("en-IN")}</span></div>
-            <div className="calc-row"><span className="k">Monthly Loss</span><span className="v highlight">{fmtRs(calc.monthlyLossRs)}</span></div>
-            <div className="calc-row"><span className="k">Annual Loss</span><span className="v">{fmtRs(calc.annualLossRs)}</span></div>
+            <div className="calc-row">
+              <span className="k">Load utilization</span>
+              <span className="v">
+                {(calc.utilization * 100).toFixed(0)}%
+                {calc.utilization > 1.1 && <span style={{ color: 'var(--brick)', marginLeft: 6 }}>drawing more than contracted</span>}
+                {calc.utilization < 0.5 && <span style={{ color: 'var(--ink-soft)', marginLeft: 6 }}>low usage</span>}
+              </span>
+            </div>
+            <div className="calc-row"><span className="k">Reactive penalty (kVAh − kWh)</span><span className="v">{calc.reactiveDiff.toLocaleString("en-IN")}</span></div>
+            <div className="calc-row"><span className="k">Monthly penalty</span><span className="v highlight">{fmtRs(calc.monthlyLossRs)}</span></div>
+            <div className="calc-row"><span className="k">Annual penalty</span><span className="v">{fmtRs(calc.annualLossRs)}</span></div>
             <div className="calc-row">
               <span className="k">
-                Required kVAR ({resolvedType === "HT" ? "max(CMD,RMD) × 0.8" : "CL × 0.8"})
+                Panel size needed
+                <span style={{ fontSize: 10, opacity: 0.7, marginLeft: 4 }}>
+                  ({calc.sizingNote})
+                </span>
               </span>
-              <span className="v">{calc.requiredKvarRaw.toFixed(1)} → {calc.recommendedKvar} kVAR</span>
+              <span className="v">
+                {calc.recommendedKvar} kVAR
+              </span>
             </div>
-            <div className="calc-row"><span className="k">Step Progression</span><span className="v" style={{ fontSize: 12 }}>{calc.steps.join(" • ")}{customAddon > 0 ? ` + ${customAddon}` : ""}</span></div>
+            <div className="calc-row"><span className="k">Capacitor stages</span><span className="v" style={{ fontSize: 12 }}>{calc.steps.join(" + ")}{customAddon > 0 ? ` + ${customAddon}` : ""} kVAR</span></div>
 
             <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(0,0,0,0.02)', borderRadius: '8px', border: '1px solid var(--line)' }}>
               <div style={{ marginBottom: '8px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.1em', color: 'var(--ink-soft)', textTransform: 'uppercase' }}>Options</div>
@@ -915,7 +1051,7 @@ export default function App() {
           </div>
 
           <div className="panel">
-            <h2><span className="num">4</span>Customer Information</h2>
+            <h2><span className="num">4</span>Quote details</h2>
             <div className="field">
               <label>Name *</label>
               <input
@@ -984,25 +1120,25 @@ export default function App() {
         <div className="print-area">
           <div className="card-wrap">
             <div className="pitch-card">
-              <div className="brand">DeepAndWide Technologies Pvt. Ltd.</div>
+              <div className="brand">DeepAndWide Technologies</div>
               <div className="sc-rmd-row">
                 <span>SC: <strong>{scno || "NA"}</strong></span>
                 <span>MF: <strong>{mf}</strong></span>
-                <span>RMD: <strong>{recordedMd || "NA"}</strong></span>
+                <span>Peak: <strong>{recordedMd || "NA"} kW</strong></span>
               </div>
               <div className="card-grid">
-                <div className="field-row"><span className="lbl">kVAh</span><span className="val">{kvah || "NA"}</span></div>
-                <div className="field-row"><span className="lbl">C.L</span><span className="val">{connectedLoad || "NA"}</span></div>
-                <div className="field-row"><span className="lbl">kWh</span><span className="val">{kwh || "NA"}</span></div>
-                <div className="field-row"><span className="lbl">kVAR</span><span className="val">{calc.recommendedKvar || "NA"}</span></div>
-                <div className="field-row"><span className="lbl">Diff</span><span className="val">{calc.reactiveDiff || "NA"}</span></div>
-                <div className="field-row"><span className="lbl">Cost</span><span className="val">{calc.panelCost ? "₹" + calc.panelCost.toLocaleString("en-IN") : "NA"}</span></div>
-                <div className="field-row"><span className="lbl">Loss</span><span className="val">{calc.monthlyLossRs > 0 ? "₹" + Math.round(calc.monthlyLossRs).toLocaleString("en-IN") : "NA"}</span></div>
-                <div className="field-row"><span className="lbl">ROI</span><span className="val">{calc.roiMonths > 0 ? calc.roiMonths.toFixed(1) + "M" : "NA"}</span></div>
+                <div className="field-row"><span className="lbl">Apparent</span><span className="val">{kvah ? kvah.toLocaleString("en-IN") : "NA"}</span></div>
+                <div className="field-row"><span className="lbl">Load</span><span className="val">{connectedLoad || "NA"} kW</span></div>
+                <div className="field-row"><span className="lbl">Real</span><span className="val">{kwh ? kwh.toLocaleString("en-IN") : "NA"}</span></div>
+                <div className="field-row"><span className="lbl">Panel</span><span className="val">{calc.recommendedKvar || "NA"} kVAR</span></div>
+                <div className="field-row"><span className="lbl">Penalty</span><span className="val">{calc.reactiveDiff ? calc.reactiveDiff.toLocaleString("en-IN") : "NA"}</span></div>
+                <div className="field-row"><span className="lbl">Price</span><span className="val">{calc.panelCost ? "₹" + calc.panelCost.toLocaleString("en-IN") : "NA"}</span></div>
+                <div className="field-row"><span className="lbl">You lose</span><span className="val">{calc.monthlyLossRs > 0 ? "₹" + Math.round(calc.monthlyLossRs).toLocaleString("en-IN") + "/mo" : "NA"}</span></div>
+                <div className="field-row"><span className="lbl">Payback</span><span className="val">{calc.roiMonths > 0 ? calc.roiMonths.toFixed(0) + " months" : "NA"}</span></div>
               </div>
               <div className="card-footer">
-                <span>{(resolvedType || "—")} · {customerName ? customerName.toUpperCase().slice(0, 22) : "CUSTOMER"}</span>
-                <span>+91 83748 40074</span>
+                <span>{customerName ? customerName.toUpperCase().slice(0, 25) : (resolvedType || "—")}</span>
+                <span>DM your bill: 83748 40074</span>
               </div>
             </div>
           </div>

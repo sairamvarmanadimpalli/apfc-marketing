@@ -3,9 +3,10 @@
  * DeepAndWide Technologies Pvt. Ltd.
  *
  * Endpoints:
- *   GET /api/bill?scno=113400807&type=LT
- *   GET /api/bill?scno=MCL3800&type=HT
- *   GET /api/bill?scno=113400807            (auto-detects type)
+ *   GET /api/bill?scno=113400807&type=LT                    (TSSPDCL auto)
+ *   GET /api/bill?scno=MCL3800&type=HT                      (TSSPDCL auto)
+ *   GET /api/bill?scno=113400807&utility=tsspdcl            (explicit utility)
+ *   GET /api/bill?scno=1413290408002001&utility=apepdcl     (APEPDCL LT)
  *   GET /api/health
  *
  * Returns JSON with parsed bill data + the original URL used.
@@ -15,11 +16,24 @@
  *   wrangler deploy
  */
 
-const LT_URL = (scno) =>
+// ===== TSSPDCL URLs =====
+const TSSPDCL_LT_URL = (scno) =>
   `https://tgsouthernpower.org/ops/DuplicateBill4Login.jsp?ctscno=${encodeURIComponent(scno)}`;
 
-const HT_URL = (scno) =>
+const TSSPDCL_HT_URL = (scno) =>
   `https://webportal.tgsouthernpower.org/HTBilling/MeterDetails/HTBillSet_BillViewGen.jsp?htscno=${encodeURIComponent(scno)}`;
+
+// Legacy aliases
+const LT_URL = TSSPDCL_LT_URL;
+const HT_URL = TSSPDCL_HT_URL;
+
+// ===== APEPDCL URLs =====
+const APEPDCL_BASE = "https://www.apeasternpower.com";
+const APEPDCL_PAY_PAGE = `${APEPDCL_BASE}/payWithoutLogin`;
+const APEPDCL_CAPTCHA = `${APEPDCL_BASE}/generateCaptcha`;
+const APEPDCL_GET_BILL = `${APEPDCL_BASE}/getLTOnlinePayData`;
+const APEPDCL_CHATBOX = `${APEPDCL_BASE}/getChatboxBill`;
+const APEPDCL_EBILL = (id) => `${APEPDCL_BASE}/viewEbill?id=${encodeURIComponent(id)}`;
 
 // ----- CORS headers (allow the GitHub Pages origin and dev) -----
 const ALLOWED_ORIGINS = [
@@ -54,12 +68,26 @@ function jsonResponse(req, body, status = 200) {
 }
 
 // ----- HT vs LT auto-detection from the SC number -----
-// LT: pure digits, 9-15 length (e.g. 113400807)
-// HT: starts with 3 letters + digits (e.g. MCL3800, SEC1727, IBM1234)
+// TSSPDCL LT: pure digits, 6-15 length (e.g. 113400807)
+// TSSPDCL HT: starts with 2-4 letters + digits (e.g. MCL3800, SEC1727, IBM1234)
+// APEPDCL LT: 16-digit pure numeric (e.g. 1413290408002001) or 8-digit legacy
+// APEPDCL HT: alpha-numeric prefix (login required, not publicly accessible)
 function detectType(scno) {
   const s = (scno || "").trim().toUpperCase();
   if (/^[A-Z]{2,4}\d+$/.test(s)) return "HT";
-  if (/^\d{6,15}$/.test(s)) return "LT";
+  if (/^\d{6,16}$/.test(s)) return "LT";
+  return null;
+}
+
+// Detect which utility based on SC number format
+function detectUtility(scno) {
+  const s = (scno || "").trim();
+  // APEPDCL LT: 16-digit USC or 8-digit legacy SCNO
+  if (/^\d{16}$/.test(s)) return "APEPDCL";
+  if (/^\d{8}$/.test(s)) return "APEPDCL"; // Could be either, but 8-digit is common APEPDCL format
+  // TSSPDCL: 9-digit typical, or alpha-numeric HT
+  if (/^\d{9,15}$/.test(s)) return "TSSPDCL";
+  if (/^[A-Z]{2,4}\d+$/i.test(s)) return "TSSPDCL";
   return null;
 }
 
@@ -284,6 +312,212 @@ function parseHtBill(html) {
   return out;
 }
 
+// ===== APEPDCL LT Bill Parser =====
+// Field mappings for APEPDCL e-bill (/viewEbill)
+const APEPDCL_LT_FIELDS = {
+  uscNo: [/Service\s*Number\s*(\d{8,16})/i],
+  consumerName: [/Consumer\s*Name\s+([A-Z][A-Z\s.\/&\-]{1,60})/i],
+  billNumber: [/Bill\s*Number\s+(\d+)/i],
+  billDate: [/Bill\s*Date\s+([\d\-A-Za-z]+)/i],
+  dueDate: [/Due\s*Date\s+([\d\-A-Za-z]+)/i],
+  category: [/Category\s+([A-Z0-9 \-]+?)(?:\s+Meter|\s+Phase)/i],
+  meterNumber: [/Meter\s*Number\s+(\d+)/i],
+  phase: [/Phase\s+(\d)/i, parseInt],
+  connectedLoadKw: [/Connected\s*Load\s*\(KW\)\s+([\d.]+)/i, parseFloat],
+  contractedLoadKw: [/Contracted\s*Load\s*\(KW\)\s+([\d.]+)/i, parseFloat],
+  mf: [/Multiplying\s*Factor\s+([\d.]+)/i, parseFloat],
+  presentKwh: [/Present\s*Reading\s*\(kWh\)\s+([\d.]+)/i, parseFloat],
+  previousKwh: [/Previous\s*Reading\s*\(kWh\)\s+([\d.]+)/i, parseFloat],
+  presentKvah: [/Present\s*Reading\s*\(kVAh\)\s+([\d.]+)/i, parseFloat],
+  previousKvah: [/Previous\s*Reading\s*\(kVAh\)\s+([\d.]+)/i, parseFloat],
+  billedUnits: [/\bBilled\s*Units\b\s+(\d+)/i, parseInt],
+  energyCharges: [/Energy\s*Charges\s+([\d.]+)/i, parseFloat],
+  fixedCharges: [/Fixed\s*Charges\s+([\d.]+)/i, parseFloat],
+  customerCharges: [/Customer\s*Charges\s+([\d.]+)/i, parseFloat],
+  electricityDuty: [/Electricity\s*Duty\s+([\d.]+)/i, parseFloat],
+  totalAmount: [/Total\s*Amount\s+([\d,]+\.?\d*)/i, s => parseFloat(s.replace(/,/g, ""))],
+  govtSubsidy: [/Govt\.?\s*Subsidy\s+([\d.]+)/i, parseFloat],
+  aquaSubsidy: [/Aqua\.?\s*Subsidy\s+(-?[\d.]+)/i, s => Math.abs(parseFloat(s))],
+  netBillAmount: [/Net\s*Bill\s*Amount\s+([\d,]+\.?\d*)/i, s => parseFloat(s.replace(/,/g, ""))],
+};
+
+function parseApepdclLtBill(html) {
+  const text = htmlToText(html);
+  const out = { type: "LT", utility: "APEPDCL", _raw: text.slice(0, 4000) };
+
+  // Extract all fields using mapping
+  for (const [field, [regex, transform]] of Object.entries(APEPDCL_LT_FIELDS)) {
+    const value = grab(text, regex);
+    if (value) out[field] = transform ? transform(value) : value;
+  }
+
+  // Use contracted load for sizing (this is what APEPDCL calls "Contracted Load (KW)")
+  if (out.contractedLoadKw) {
+    out.connectedLoadKw = out.contractedLoadKw;
+  }
+
+  // Calculate kWh and kVAh from meter readings
+  // IMPORTANT: Bill does NOT print these directly - must compute from readings × MF
+  const mf = out.mf || 1;
+  if (out.presentKwh && out.previousKwh) {
+    out.kwh = Math.round((out.presentKwh - out.previousKwh) * mf);
+  }
+  if (out.presentKvah && out.previousKvah) {
+    out.kvah = Math.round((out.presentKvah - out.previousKvah) * mf);
+  }
+
+  // Fallback: use billedUnits as kvah if readings not available
+  if (!out.kvah && out.billedUnits) {
+    out.kvah = out.billedUnits;
+    out._kvahNote = "Using Billed Units as kVAh (readings not found)";
+  }
+
+  // Calculate power factor
+  if (out.kwh && out.kvah && out.kvah > 0) {
+    out.powerFactor = parseFloat((out.kwh / out.kvah).toFixed(3));
+  }
+
+  // Calculate effective tariff (post-subsidy for subsidised consumers)
+  if (out.netBillAmount && out.billedUnits && out.billedUnits > 0) {
+    out.effectiveTariff = parseFloat((out.netBillAmount / out.billedUnits).toFixed(3));
+    out._tariffNote = "Post-subsidy effective rate";
+  } else if (out.energyCharges && out.kvah && out.kvah > 0) {
+    out.effectiveTariff = parseFloat((out.energyCharges / out.kvah).toFixed(2));
+  }
+
+  // For display: use contractedLoadKw as the main load figure
+  if (out.contractedLoadKw && !out.recordedMdKw) {
+    out.recordedMdKw = out.contractedLoadKw; // Use contracted as reference for sizing
+  }
+
+  return out;
+}
+
+// ===== APEPDCL Bill Fetch Flow (LT) =====
+// This is a multi-step flow requiring session cookies and captcha
+async function fetchApepdclLtBill(scno) {
+  const ctrl = new AbortController();
+  const timeout = setTimeout(() => ctrl.abort(), 30000);
+
+  try {
+    // Common headers
+    const browserHeaders = {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "Accept-Language": "en-US,en;q=0.9",
+    };
+
+    // Step 1: GET /payWithoutLogin to establish session
+    const step1 = await fetch(APEPDCL_PAY_PAGE, {
+      signal: ctrl.signal,
+      headers: { ...browserHeaders, "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" },
+    });
+    if (!step1.ok) throw new Error(`Step 1 failed: ${step1.status}`);
+
+    // Extract cookies from response
+    const cookies = step1.headers.get("set-cookie") || "";
+    const cookieHeader = cookies.split(",").map(c => c.split(";")[0].trim()).join("; ");
+
+    // Step 2: POST /generateCaptcha to get captcha token
+    // The trick: server returns plain text, and we use SAME value for both hdncaptcha and ansCaptcha1
+    const step2 = await fetch(APEPDCL_CAPTCHA, {
+      method: "POST",
+      signal: ctrl.signal,
+      headers: {
+        ...browserHeaders,
+        "Cookie": cookieHeader,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Origin": APEPDCL_BASE,
+        "Referer": APEPDCL_PAY_PAGE,
+      },
+      body: "",
+    });
+    if (!step2.ok) throw new Error(`Step 2 (captcha) failed: ${step2.status}`);
+    const captcha = (await step2.text()).trim();
+
+    // Step 3: POST /getLTOnlinePayData with navigation headers (NOT XHR)
+    const formBody = `ltscno=${encodeURIComponent(scno)}&hdncaptcha=${encodeURIComponent(captcha)}&ansCaptcha1=${encodeURIComponent(captcha)}`;
+    const step3 = await fetch(APEPDCL_GET_BILL, {
+      method: "POST",
+      signal: ctrl.signal,
+      headers: {
+        ...browserHeaders,
+        "Cookie": cookieHeader,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Origin": APEPDCL_BASE,
+        "Referer": APEPDCL_PAY_PAGE,
+        "Upgrade-Insecure-Requests": "1",
+        // IMPORTANT: NO X-Requested-With header - this must be a navigation POST
+      },
+      body: formBody,
+    });
+    if (!step3.ok) throw new Error(`Step 3 (bill data) failed: ${step3.status}`);
+    const billSummaryHtml = await step3.text();
+
+    // Check if we got the bill page (not login redirect)
+    if (!billSummaryHtml.includes("Service Number") && !billSummaryHtml.includes("Bill Date")) {
+      throw new Error("Bill summary page not returned - may be invalid SC number or session issue");
+    }
+
+    // Step 4: POST /getChatboxBill to get eBillParam
+    const step4 = await fetch(APEPDCL_CHATBOX, {
+      method: "POST",
+      signal: ctrl.signal,
+      headers: {
+        ...browserHeaders,
+        "Cookie": cookieHeader,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Requested-With": "XMLHttpRequest", // This one IS an XHR
+        "Origin": APEPDCL_BASE,
+        "Referer": APEPDCL_GET_BILL,
+      },
+      body: `ltscno=${encodeURIComponent(scno)}`,
+    });
+
+    let eBillParam = null;
+    if (step4.ok) {
+      try {
+        const chatboxJson = await step4.json();
+        eBillParam = chatboxJson.eBillParam || chatboxJson.ebillParam || null;
+        if (eBillParam) {
+          eBillParam = eBillParam.trim().replace(/[\r\n]/g, "");
+        }
+      } catch (e) {
+        // JSON parse failed - eBill not available
+      }
+    }
+
+    // Step 5: GET /viewEbill if we have eBillParam
+    let eBillHtml = null;
+    let eBillUrl = null;
+    if (eBillParam) {
+      eBillUrl = APEPDCL_EBILL(eBillParam);
+      const step5 = await fetch(eBillUrl, {
+        signal: ctrl.signal,
+        headers: {
+          ...browserHeaders,
+          "Cookie": cookieHeader,
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Referer": APEPDCL_GET_BILL,
+        },
+      });
+      if (step5.ok) {
+        eBillHtml = await step5.text();
+      }
+    }
+
+    // Return the best HTML we have (prefer eBill for detailed data)
+    return {
+      html: eBillHtml || billSummaryHtml,
+      sourceUrl: eBillUrl || APEPDCL_GET_BILL,
+      hasEbill: !!eBillHtml,
+    };
+
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 // ----- Fetch with timeout + browser-like headers -----
 async function fetchBill(url) {
   const ctrl = new AbortController();
@@ -311,11 +545,18 @@ async function fetchBill(url) {
 async function handleBill(req, url) {
   const scno = (url.searchParams.get("scno") || "").trim();
   let type = (url.searchParams.get("type") || "").toUpperCase();
+  let utility = (url.searchParams.get("utility") || "").toUpperCase();
 
   if (!scno) {
     return jsonResponse(req, { ok: false, error: "Missing scno parameter" }, 400);
   }
 
+  // Auto-detect utility if not specified
+  if (!["TSSPDCL", "APEPDCL"].includes(utility)) {
+    utility = detectUtility(scno) || "TSSPDCL"; // Default to TSSPDCL
+  }
+
+  // Auto-detect connection type if not specified
   if (!["LT", "HT"].includes(type)) {
     type = detectType(scno);
     if (!type) {
@@ -326,7 +567,57 @@ async function handleBill(req, url) {
     }
   }
 
-  const targetUrl = type === "HT" ? HT_URL(scno) : LT_URL(scno);
+  // ===== APEPDCL Handling =====
+  if (utility === "APEPDCL") {
+    // APEPDCL HT requires login - not publicly accessible
+    if (type === "HT") {
+      return jsonResponse(req, {
+        ok: false,
+        error: "APEPDCL HT bills require consumer login and are not publicly accessible. Please enter bill data manually or provide the bill PDF.",
+        utility,
+        type,
+      }, 400);
+    }
+
+    // APEPDCL LT - use multi-step fetch flow
+    try {
+      const result = await fetchApepdclLtBill(scno);
+      const html = result.html;
+
+      // Validate we got a bill
+      const looksValid = /Service\s*Number|Bill\s*Date|APEPDCL|kWh|kVAh/i.test(html);
+      if (!looksValid) {
+        return jsonResponse(req, {
+          ok: false,
+          error: "APEPDCL returned a page but no bill markers found. Verify USC number.",
+          utility,
+          sourceUrl: result.sourceUrl,
+        }, 404);
+      }
+
+      const parsed = parseApepdclLtBill(html);
+      parsed.utility = "APEPDCL";
+      parsed._hasEbill = result.hasEbill;
+
+      return jsonResponse(req, {
+        ok: true,
+        scno,
+        type: "LT",
+        utility: "APEPDCL",
+        sourceUrl: result.sourceUrl,
+        data: parsed,
+      });
+    } catch (e) {
+      return jsonResponse(req, {
+        ok: false,
+        error: `APEPDCL fetch failed: ${e.message}`,
+        utility: "APEPDCL",
+      }, 502);
+    }
+  }
+
+  // ===== TSSPDCL Handling (default) =====
+  const targetUrl = type === "HT" ? TSSPDCL_HT_URL(scno) : TSSPDCL_LT_URL(scno);
 
   try {
     const html = await fetchBill(targetUrl);
@@ -341,16 +632,19 @@ async function handleBill(req, url) {
       return jsonResponse(req, {
         ok: false,
         error: "Upstream returned a page but no bill markers found. Verify SC number.",
+        utility: "TSSPDCL",
         sourceUrl: targetUrl,
       }, 404);
     }
 
     const parsed = type === "HT" ? parseHtBill(html) : parseLtBill(html);
+    parsed.utility = "TSSPDCL";
 
     return jsonResponse(req, {
       ok: true,
       scno,
       type,
+      utility: "TSSPDCL",
       sourceUrl: targetUrl,
       data: parsed,
     });
@@ -358,6 +652,7 @@ async function handleBill(req, url) {
     return jsonResponse(req, {
       ok: false,
       error: `Fetch failed: ${e.message}`,
+      utility: "TSSPDCL",
       sourceUrl: targetUrl,
     }, 502);
   }
