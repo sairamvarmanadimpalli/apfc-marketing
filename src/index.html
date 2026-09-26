@@ -1200,6 +1200,68 @@
     .case-note{flex-direction:column;align-items:flex-start;gap:8px}
   }
 
+  /* ═══ DECK SECTIONS: why-now, monitoring, aqua, offer ═══ */
+  .whynow{background:var(--paper-warm)}
+  .num-list{list-style:none;display:flex;flex-direction:column;gap:16px;padding:0;margin:0}
+  .num-list li{
+    display:grid;grid-template-columns:44px 1fr;gap:20px;align-items:start;
+    padding:24px;background:white;border-radius:var(--radius);
+    border:1px solid var(--line);box-shadow:var(--shadow-sm);
+  }
+  .num-list .n{
+    font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px;
+    color:var(--accent-dark);padding-top:2px;
+  }
+  .num-list h3{font-size:18px;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
+  .num-list p{color:var(--ink-soft);font-size:15px;line-height:1.7;margin:0}
+
+  .alert-demo{
+    background:var(--ink);color:var(--paper);border-radius:var(--radius);
+    padding:18px 22px;display:flex;align-items:center;gap:14px;
+    font-family:'JetBrains Mono',monospace;font-size:14px;margin-bottom:32px;
+  }
+  .alert-demo .dot{
+    width:9px;height:9px;border-radius:50%;background:var(--accent);flex:none;
+  }
+  .alert-demo .t{color:var(--ink-soft);margin-left:auto;font-size:12px;white-space:nowrap}
+
+  .aqua{background:var(--sand)}
+  .note-line{
+    margin-top:24px;font-size:14px;color:var(--ink-soft);
+    padding:16px 20px;border-left:3px solid var(--line);
+  }
+
+  .offer{background:var(--ink);color:var(--paper)}
+  .offer .section-num{color:var(--coral)}
+  .offer .section-title{color:var(--paper)}
+  .offer .section-title em{color:var(--coral)}
+  .offer .section-intro{color:rgba(255,251,250,.68)}
+  .offer-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:32px;
+  }
+  @media(max-width:860px){.offer-grid{grid-template-columns:1fr}}
+  .offer-step{
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);padding:28px;
+  }
+  .offer-step .when{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--coral);margin-bottom:16px;
+  }
+  .offer-step h3{font-size:20px;font-weight:700;margin-bottom:10px;color:var(--paper)}
+  .offer-step p{color:rgba(255,251,250,.68);font-size:15px;line-height:1.7;margin:0}
+  .offer-back{
+    border:1px solid rgba(255,255,255,.18);border-radius:var(--radius);
+    padding:24px 28px;display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;
+  }
+  .offer-back h3{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--paper)}
+  .offer-back p{color:rgba(255,251,250,.68);font-size:15px;line-height:1.7;margin:0;flex:1;min-width:260px}
+  .offer-price{
+    margin-top:24px;font-size:15px;color:rgba(255,251,250,.68);
+    padding-top:24px;border-top:1px solid rgba(255,255,255,.12);
+  }
+  .offer-price b{color:var(--paper)}
+
 </style>
 </head>
 <body>
@@ -1239,7 +1301,9 @@
       <a href="#problem">The Problem</a>
       <a href="#benefits">Benefits</a>
       <a href="#who">Who It's For</a>
+      <a href="#aqua">Aquaculture</a>
       <a href="#savings">Savings</a>
+      <a href="#offer">The Offer</a>
       <a href="#calculator">Calculator</a>
       <a href="#faq">FAQ</a>
       <a href="https://powerdoc.deepandwide.in">Log in</a>
@@ -1281,7 +1345,7 @@
           <span>Saved per year on a ₹25k/mo bill</span>
         </div>
         <div>
-          <strong>~3.3 mo</strong>
+          <strong>4–10 mo</strong>
           <span>Typical payback period</span>
         </div>
         <div>
@@ -1385,10 +1449,43 @@
   </div>
 </section>
 
+<!-- WHY NOW -->
+<section id="whynow" class="block whynow">
+  <div class="container">
+    <div class="section-num">02 — Why now</div>
+    <h2 class="section-title">The rules changed. <em>Your bill already knows.</em></h2>
+    <p class="section-intro">Two tariff changes in Telangana turned a quiet inefficiency into a line item that grows as your shop grows. If your bill looks worse than it did two years ago for the same work, this is why.</p>
+
+    <ul class="num-list">
+      <li>
+        <div class="n">01</div>
+        <div>
+          <h3>kVAh billing is live</h3>
+          <p>Commercial connections above 10 kW are now billed on kVAh — apparent energy — instead of kWh. You are charged for the power you <em>draw</em>, not the power you actually use. A poor power factor inflates the bill for exactly the same work.</p>
+        </div>
+      </li>
+      <li>
+        <div class="n">02</div>
+        <div>
+          <h3>Leading kVArh is charged too</h3>
+          <p>TGERC has directed the DISCOMs to charge leading kVArh. A fixed capacitor bank that over-corrects now costs you money instead of saving it — so the old "install a bank and forget it" approach is no longer safe.</p>
+        </div>
+      </li>
+      <li>
+        <div class="n">03</div>
+        <div>
+          <h3>Nothing in your shop adapts on its own</h3>
+          <p>Cafés, restaurants, salons and clinics in the 15–120 kW range run swinging HVAC and refrigeration loads, with nobody watching the meter. A fixed bank cannot follow a load that changes every hour. An automatic, self-adjusting panel can.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
 <!-- SOLUTION -->
 <section class="block solution">
   <div class="container">
-    <div class="section-num">02 — The fix</div>
+    <div class="section-num">03 — The fix</div>
     <h2 class="section-title">One small box. <em>Silently fixes everything.</em></h2>
 
     <div class="solution-split">
@@ -1396,7 +1493,7 @@
         <p>An APFC panel is a <em>small steel cabinet</em> — roughly the size of a mini-fridge — that mounts on a wall next to your main electrical panel.</p>
         <p>Inside, a sensor watches your shop's power usage every second. When it detects the "froth" building up, it instantly connects the right amount of capacitors to cancel it out. When the load drops, it disconnects them.</p>
         <p>It does this 24 hours a day, 365 days a year, with no input from you. No buttons. No switches. No maintenance routine. It just quietly keeps your bill clean.</p>
-        <p>You install it once. It works for 5+ years. After payback — typically ~3.3 months — every rupee saved is pure profit.</p>
+        <p>You install it once. It works for 5+ years. After payback — typically 4–10 months — every rupee saved is pure profit.</p>
       </div>
 
       <div class="panel-diagram">
@@ -1443,10 +1540,46 @@
   </div>
 </section>
 
+<!-- MONITORING -->
+<section id="monitoring" class="block">
+  <div class="container">
+    <div class="section-num">04 — Monitoring</div>
+    <h2 class="section-title">It saves you money. <em>It also watches your machines.</em></h2>
+    <p class="section-intro">The panel sits on your main feed, which means it already measures everything behind it. The same signal that proves your saving can tell you what is running, what is drawing abnormally, and what has stopped.</p>
+
+    <div class="alert-demo">
+      <span class="dot"></span>
+      <span>Aerator #4 stopped — no current on phase B</span>
+      <span class="t">02:14 AM</span>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step">
+        <h3>Failure alerts</h3>
+        <p>When a motor stops drawing current, you get a message — not a report next month. Built to get through on weak rural networks.</p>
+      </div>
+      <div class="step">
+        <h3>Status in your pocket</h3>
+        <p>Green, grey or red per device. No dashboard to learn, and a Telugu-first interface for the people actually on site.</p>
+      </div>
+      <div class="step">
+        <h3>One point, whole site</h3>
+        <p>A single clamp on the main feed reads every motor behind it. Nothing to fit on individual machines, nothing to rewire.</p>
+      </div>
+      <div class="step">
+        <h3>Longer equipment life</h3>
+        <p>Clean power runs compressors and motors cooler. Uptime you can see is uptime you can actually protect.</p>
+      </div>
+    </div>
+
+    <p class="note-line">Monitoring is rolling out across our panel range — ask us what is available for your connection type and site today.</p>
+  </div>
+</section>
+
 <!-- BENEFITS -->
 <section id="benefits" class="block benefits">
   <div class="container">
-    <div class="section-num">03 — What you get</div>
+    <div class="section-num">05 — What you get</div>
     <h2 class="section-title">Not just savings. <em>A better-running shop.</em></h2>
     <p class="section-intro">Lower bills are the headline. But the quieter wins — longer equipment life, stable lighting, more headroom — are the ones you'll notice day to day.</p>
 
@@ -1488,9 +1621,9 @@
 <!-- WHO IT'S FOR -->
 <section id="who" class="block segments">
   <div class="container">
-    <div class="section-num">04 — Who it's for</div>
+    <div class="section-num">06 — Who it's for</div>
     <h2 class="section-title">Built for the shops <em>you see every day.</em></h2>
-    <p class="section-intro">If your shop has an AC, a freezer, lighting, or motors — and a commercial electricity connection — an APFC pays for itself — typically in ~3.3 months.</p>
+    <p class="section-intro">If your shop has an AC, a freezer, lighting, or motors — and a commercial electricity connection — an APFC pays for itself — typically in 4–10 months.</p>
 
     <div class="seg-grid">
       <div class="seg">
@@ -1584,10 +1717,38 @@
   </div>
 </section>
 
+<!-- AQUACULTURE -->
+<section id="aqua" class="block aqua">
+  <div class="container">
+    <div class="section-num">07 — For pond farms</div>
+    <h2 class="section-title">One aerator stops at 2 AM. <em>By morning the pond is gone.</em></h2>
+    <p class="section-intro">Aquaculture is the one place where the electricity bill is the smaller problem. Aerators run around the clock, and a single failure nobody notices overnight can suffocate an entire pond — months of income, lost by sunrise.</p>
+
+    <div class="steps-grid">
+      <div class="step">
+        <h3>A 24/7 inductive load</h3>
+        <p>Aerators, circulation pumps and feeders run continuously. That is both a large power-factor penalty and a large surface for things to fail on.</p>
+      </div>
+      <div class="step">
+        <h3>Overnight is the danger</h3>
+        <p>A stopped aerator at 2 AM is invisible until someone walks the bund at dawn. By then dissolved oxygen has already crashed.</p>
+      </div>
+      <div class="step">
+        <h3>Alerts that reach you</h3>
+        <p>Device-level stop alerts pushed to your phone, in Telugu, designed to get through on the networks coastal farms actually have.</p>
+      </div>
+      <div class="step">
+        <h3>And the bill drops</h3>
+        <p>The same correction that protects the pond removes the power-factor penalty on your pumping load. The saving funds the protection.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- SAVINGS CALCULATOR -->
 <section id="savings" class="block calc">
   <div class="container">
-    <div class="section-num">05 — Do the math</div>
+    <div class="section-num">08 — Do the math</div>
     <h2 class="section-title">What it looks like on <em>your</em> bill.</h2>
 
     <!-- Interactive ROI Calculator -->
@@ -1771,7 +1932,7 @@
 <!-- CASE STUDY -->
 <section id="case" class="block case">
   <div class="container">
-    <div class="section-num">05½ — A real bill</div>
+    <div class="section-num">08½ — A real bill</div>
     <h2 class="section-title">One shop. <em>One month.</em> ₹10,315 gone.</h2>
     <p class="section-intro">This is an actual TSSPDCL connection — SC 113400807, July 2026. The meter billed 8,935 kVAh while the equipment only consumed 7,674 kWh. That 1,261 unit gap is reactive power, charged at the full ₹8.18 tariff.</p>
 
@@ -1799,10 +1960,46 @@
   </div>
 </section>
 
+<!-- THE OFFER -->
+<section id="offer" class="block offer">
+  <div class="container">
+    <div class="section-num">09 — The offer</div>
+    <h2 class="section-title">Pay half now. <em>Pay the rest only after your bill proves it.</em></h2>
+    <p class="section-intro">We stopped asking anyone to take a savings claim on trust. Your next electricity bill is the only proof that counts — so we built the payment terms around it.</p>
+
+    <div class="offer-grid">
+      <div class="offer-step">
+        <div class="when">Day 0 · Commissioning</div>
+        <h3>You pay half</h3>
+        <p>50% when the panel is installed and commissioned on your wall. Nothing before that.</p>
+      </div>
+      <div class="offer-step">
+        <div class="when">Your next billing cycle</div>
+        <h3>The bill proves it</h3>
+        <p>The power-factor penalty is gone from your own statement. You are reading the proof on your bill, not in our brochure.</p>
+      </div>
+      <div class="offer-step">
+        <div class="when">After that</div>
+        <h3>The balance clears</h3>
+        <p>We bank the post-dated cheque for the remaining 50% — after you have already seen what you are paying for.</p>
+      </div>
+    </div>
+
+    <div class="offer-back">
+      <div>
+        <h3>And if it doesn't deliver?</h3>
+      </div>
+      <p>We buy the unit back at 50% and take it away. You are not left holding equipment that didn't do what we said it would.</p>
+    </div>
+
+    <p class="offer-price">Our price sits at the ordinary end of the market — <b>about what you would pay anyone for a plain APFC panel and installation.</b> The monitoring, the risk-free terms and the buy-back are not a premium package. They are what comes in the box.</p>
+  </div>
+</section>
+
 <!-- STEPS -->
 <section class="block steps">
   <div class="container">
-    <div class="section-num">06 — How it works</div>
+    <div class="section-num">10 — How it works</div>
     <h2 class="section-title">From DM to lower bill — <em>in under 2 weeks.</em></h2>
 
     <div class="steps-grid">
@@ -1837,7 +2034,7 @@
 <!-- TSSPDCL Calculator -->
 <section id="calculator" class="block" style="background: var(--paper-warm); border-top: 2px solid var(--line); border-bottom: 2px solid var(--line);">
   <div class="container">
-    <div class="section-num">06½ — TSSPDCL Customers</div>
+    <div class="section-num">10½ — TSSPDCL Customers</div>
     <h2 class="section-title">Get your <em>exact</em> bill analysis in 30 seconds.</h2>
 
     <div style="max-width: 680px; margin: 0 auto; text-align: center;">
@@ -1884,7 +2081,7 @@
 <!-- FAQ -->
 <section id="faq" class="block faq">
   <div class="container">
-    <div class="section-num">07 — Common questions</div>
+    <div class="section-num">11 — Common questions</div>
     <h2 class="section-title">The things shop owners <em>actually ask.</em></h2>
 
     <div class="faq-list">
@@ -1894,7 +2091,7 @@
       </details>
       <details>
         <summary>How much does an APFC panel cost?</summary>
-        <p>For a typical commercial shop, panels start from ₹15,000 and go up to ₹2,00,000 depending on load and configuration. Payback is typically ~3.3 months from savings alone. We only recommend the size you actually need — no oversizing.</p>
+        <p>For a typical commercial shop, panels start from ₹15,000 and go up to ₹2,00,000 depending on load and configuration. Payback is typically 4–10 months from savings alone. We only recommend the size you actually need — no oversizing.</p>
       </details>
       <details>
         <summary>Will my shop have to shut down during installation?</summary>
@@ -1948,7 +2145,9 @@
         <a href="#problem">The Problem</a>
         <a href="#benefits">Benefits</a>
         <a href="#who">Who It's For</a>
+        <a href="#aqua">Aquaculture</a>
         <a href="#savings">Savings</a>
+        <a href="#offer">The Offer</a>
         <a href="#calculator">Bill Analyzer</a>
         <a href="#faq">FAQ</a>
       </div>
