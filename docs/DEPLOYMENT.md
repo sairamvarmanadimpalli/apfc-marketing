@@ -60,7 +60,7 @@ Upload the contents of `src/` to your web root via FTP/SFTP. Rename `index.html`
 ## Custom domain
 
 Whichever host you pick:
-1. Add a custom domain in the host's dashboard (e.g., `apfc.deepandwide.in`).
+1. Add a custom domain in the host's dashboard (e.g., `www.deepandwide.in`).
 2. Add the DNS record they ask for (usually a `CNAME`).
 3. Wait for DNS to propagate (a few minutes to a few hours).
 4. Most hosts auto-issue Let's Encrypt SSL. Verify HTTPS works.
