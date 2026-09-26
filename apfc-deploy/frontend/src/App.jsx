@@ -1043,7 +1043,7 @@ export default function App() {
                 lineHeight: '1.6'
               }}>
                 <strong style={{ color: '#2e7d32', display: 'block', marginBottom: '4px' }}>✓ Custom Configuration</strong>
-                This is a custom panel ({'>'}{calc.steps.length} channels). We'll confirm the exact configuration and provide a detailed quote. Call us at <a href="tel:+918374840074" style={{ color: '#2e7d32', fontWeight: 600 }}>+91 83748 40074</a>.
+                This is a custom panel ({'>'}{calc.steps.length} channels). We'll confirm the exact configuration and provide a detailed quote. Call us at <a href="tel:+919866419393" style={{ color: '#2e7d32', fontWeight: 600 }}>+91 98664 19393</a>.
               </div>
             )}
 
@@ -1138,7 +1138,7 @@ export default function App() {
               </div>
               <div className="card-footer">
                 <span>{customerName ? customerName.toUpperCase().slice(0, 25) : (resolvedType || "—")}</span>
-                <span>DM your bill: 83748 40074</span>
+                <span>DM your bill: 98664 19393</span>
               </div>
             </div>
           </div>
