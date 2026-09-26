@@ -173,9 +173,39 @@
   .hero-card .mini span{color:var(--ink-soft);font-size:12px}
 
   /* ═══ MARQUEE ═══ */
-  .marquee{display:none}
+  .marquee{
+    display:block;overflow:hidden;background:var(--ink);
+    padding:16px 0;white-space:nowrap;
+  }
+  .marquee-track{
+    display:inline-flex;width:max-content;
+    animation:marquee-scroll 32s linear infinite;
+  }
+  .marquee-track span{
+    font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+    letter-spacing:.03em;text-transform:uppercase;color:var(--paper);opacity:.6;
+  }
+  .marquee-track span:not(:last-child)::after{
+    content:"•";color:var(--accent);margin:0 28px;
+  }
+  .marquee:hover .marquee-track{animation-play-state:paused}
+  @keyframes marquee-scroll{
+    from{transform:translateX(0)}
+    to{transform:translateX(-50%)}
+  }
+
+  /* ═══ MISSION BAR ═══ */
+  .mission-bar{
+    background:var(--ink);color:var(--paper);opacity:.9;
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
+    letter-spacing:.02em;text-align:center;line-height:1.5;
+    padding:10px 20px;
+  }
+  .mission-bar em{font-style:normal;color:var(--accent)}
+
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1; transform: none; transition: none; }
+    .marquee-track{animation:none}
   }
 
   /* ═══ SECTION BASE ═══ */
@@ -1299,6 +1329,9 @@
   </div>
 </div>
 
+<!-- MISSION BAR -->
+<div class="mission-bar">Building the <em>energy-intelligence layer</em> for Indian business — starting with your bill.</div>
+
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
@@ -1579,6 +1612,16 @@
     </div>
 
     <p class="note-line">Monitoring is rolling out across our panel range — ask us what is available for your connection type and site today.</p>
+  </div>
+</section>
+
+<!-- VISION -->
+<section id="vision" class="block">
+  <div class="container">
+    <div class="section-num">04½ — The vision</div>
+    <h2 class="section-title">It starts as a bill fix. <em>It doesn't stay one.</em></h2>
+    <p class="section-intro">An APFC panel earns its place on your wall because it pays for itself in months — that's the easy part to prove. But the same clamp that corrects your power factor is already reading every motor behind it.</p>
+    <p class="note-line">Whether it's on a salon's main feed, a cold store's compressor bank, or a pond farm's aerators, it's the same one clamp and the same one signal — a quiet layer of visibility on the meter every commercial site already has. We're starting with the bill. We're not stopping there.</p>
   </div>
 </section>
 
@@ -2144,7 +2187,7 @@
     <div class="foot-grid">
       <div>
         <div class="foot-brand">DeepAndWide<span>.</span></div>
-        <p class="foot-tagline">Designing and manufacturing APFC panels for commercial India since 2019. Serving Telangana, Andhra Pradesh and Goa.</p>
+        <p class="foot-tagline">Building the energy-intelligence layer for Indian business, one meter at a time — since 2019. Serving Telangana, Andhra Pradesh and Goa.</p>
       </div>
       <div>
         <h4>Explore</h4>
