@@ -82,5 +82,5 @@ _If the numbers don't work, we'll tell you honestly._
 📧 *Email:* info@deepandwide.in
 
 *DeepAndWide Technologies Pvt. Ltd.*
-_Hyderabad · Tirupati · Goa · Muramalla_
+_Telangana · Andhra Pradesh · Goa_
 _Saving shops money since 2019_
