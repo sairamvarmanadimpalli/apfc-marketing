@@ -78,8 +78,8 @@ _If the numbers don't work, we'll tell you honestly._
 ---
 
 🌐 *Website:* www.deepandwide.in
-📱 *WhatsApp:* +91 83748 40074
-📧 *Email:* sairam@deepandwide.in
+📱 *WhatsApp:* +91 98664 19393
+📧 *Email:* info@deepandwide.in
 
 *DeepAndWide Technologies Pvt. Ltd.*
 _Hyderabad · Tirupati · Goa · Muramalla_
