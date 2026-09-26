@@ -36,7 +36,11 @@ const APEPDCL_CHATBOX = `${APEPDCL_BASE}/getChatboxBill`;
 const APEPDCL_EBILL = (id) => `${APEPDCL_BASE}/viewEbill?id=${encodeURIComponent(id)}`;
 
 // ----- CORS headers (allow the GitHub Pages origin and dev) -----
+// www is the canonical site; apfc.deepandwide.in is kept for the legacy
+// redirect hop and any pages still cached on the old origin.
 const ALLOWED_ORIGINS = [
+  "https://www.deepandwide.in",
+  "https://deepandwide.in",
   "https://apfc.deepandwide.in",
   "https://deepandwide.github.io",
   "http://localhost:5173",

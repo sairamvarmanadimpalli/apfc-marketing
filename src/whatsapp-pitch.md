@@ -42,7 +42,7 @@ That's *₹63,000–₹1.26L saved per year*
 ---
 
 🧮 *CALCULATE YOUR SAVINGS:*
-👉 *apfc.deepandwide.in*
+👉 *www.deepandwide.in*
 
 Enter your bill readings — get instant ROI estimate!
 
@@ -77,7 +77,7 @@ _If the numbers don't work, we'll tell you honestly._
 
 ---
 
-🌐 *Website:* apfc.deepandwide.in
+🌐 *Website:* www.deepandwide.in
 📱 *WhatsApp:* +91 83748 40074
 📧 *Email:* sairam@deepandwide.in
 

@@ -110,20 +110,23 @@ and re-push.
 
 ## Step 5 — Custom domain (optional, but recommended)
 
-To serve at `apfc.deepandwide.in`:
+To serve at `www.deepandwide.in`:
 
 1. In your DNS (where deepandwide.in is hosted), add a `CNAME` record:
    ```
-   apfc  CNAME  <your-github-user>.github.io
+   www  CNAME  <your-github-user>.github.io
    ```
-2. In repo **Settings → Pages → Custom domain**, enter `apfc.deepandwide.in`. Tick **Enforce HTTPS** once the cert provisions.
+   and four `A` records on the apex (`@`) pointing at `185.199.108.153`,
+   `185.199.109.153`, `185.199.110.153`, `185.199.111.153` so the bare
+   `deepandwide.in` redirects to www.
+2. In repo **Settings → Pages → Custom domain**, enter `www.deepandwide.in`. Tick **Enforce HTTPS** once the cert provisions.
 3. In `frontend/vite.config.js`, set:
    ```js
    base: "/",
    ```
 4. In `frontend/public/CNAME` create a file with one line:
    ```
-   apfc.deepandwide.in
+   www.deepandwide.in
    ```
 5. Update `worker/index.js` `ALLOWED_ORIGINS` if the new domain isn't already there. Re-deploy the worker.
 
